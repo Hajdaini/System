@@ -12,17 +12,18 @@ help_content = """
 - exit : exit the script
 """
 
+
 def ftp_connect():
     while True:
-        user = input('Please enter FTP user : ')
-        password = input('Please enter FTP password : ')
-        address = input('Please enter FTP address : ')
+        user = input('Please enter FTP user: ')
+        password = input('Please enter FTP address: ')
+        address = input('Please enter FTP address: ')
         try:
             ftp = ftplib.FTP(address, user, password)
             print(ftp.getwelcome())
             print("----------------------------------")
             print('Enter help to see the different commands')
-            ftp_command(ftp)
+            ftp_command(ftp, user, address)
             break
         except ftplib.all_errors as e:
             print(e)
@@ -71,7 +72,8 @@ def download_ftp_tree(ftp_handle, path, overwrite=False):
     mirror_ftp_dir(ftp_handle, path, overwrite)
     os.chdir(original_directory)
 
-def ftp_command(ftp):
+
+def ftp_command(ftp, user, address):
     while True:
         command = input("ftp://{}@{}:{} > ".format(user, address, ftp.pwd()))
         commands = command.split()
