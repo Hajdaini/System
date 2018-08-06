@@ -14,9 +14,9 @@ help_content = """
 
 def ftp_connect():
     while True:
-        user = input('Please enter FTP user: ')
-        password = input('Please enter FTP address: ')
-        address = input('Please enter FTP address: ')
+        user = input('Please enter FTP user : ')
+        password = input('Please enter FTP password : ')
+        address = input('Please enter FTP address : ')
         try:
             ftp = ftplib.FTP(address, user, password)
             print(ftp.getwelcome())
