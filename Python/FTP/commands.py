@@ -27,7 +27,8 @@ def ls(args, ftp, address, user):
 
 def cat(args, ftp, address, user):
     try:
-        with open("{}/{}".format(ftp.pwd(), args[1]), "r") as file:
+        file = "{}/{}".format(ftp.pwd(), args[1])
+        with open(file, args[1]), "r") as file:
             print(file.read())
     except :
         print('File may not exist or you may not have permission to access it.')
@@ -45,7 +46,7 @@ def get(args, ftp, address, user):
     except :
         print('File may not exist or you may not have permission to view it.')
     return ftp
-i
+
 def put(args, ftp, address, user):
     try:
         file = "{}/{}".format(ftp.pwd(), args[1])
@@ -57,6 +58,7 @@ def put(args, ftp, address, user):
 def mkdir(args, ftp, address, user):
     try:
         file = "{}/{}".format(ftp.pwd(), args[1])
+        print(file)
         ftp.mkd(file)
     except :
         print("You may not have permission to create folder")
