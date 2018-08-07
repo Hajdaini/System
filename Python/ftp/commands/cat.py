@@ -1,12 +1,10 @@
 #coding:utf-8
 
-class cat:
-    def __init__(self, args, ftp, address = "127.0.0.1", user = ""):
-        self.argc = len(args)
-        self.argv = args
-        self.ftp = ftp
-        self.address = address
-        self.user = user
+from commands.Command import Command
+
+class cat(Command):
+    def __init__(self, args, ftp, address, user):
+        Command.__init__(self, args, ftp, address, user)
 
     def call(self):
         try:

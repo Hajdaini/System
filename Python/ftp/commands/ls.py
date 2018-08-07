@@ -1,16 +1,15 @@
 #coding:utf-8
 
-class ls:
-    def __init__(self, args, ftp, address = "127.0.0.1", user = ""):
-        self.args = args
-        self.ftp = ftp
-        self.address = address
-        self.user = user
+from commands.Command import Command
+
+class ls(Command):
+    def __init__(self, args, ftp, address, user):
+        Command.__init__(self, args, ftp, address, user)
 
     def call(self):
-        if len(self.args) == 1:
+        if self.argc == 1:
             self.ftp.dir()
-        elif len(self.args) == 2:
-            self.ftp.dir(self.args[1])
+        elif self.argc == 2:
+            self.ftp.dir(self.argv[1])
         else:
             print("Error (Usage : ls <path>)")
