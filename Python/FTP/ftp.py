@@ -9,6 +9,9 @@ help_content = """
 - cat [path] : read data from files
 - get [path] : download a file or directory (recursively) from ftp to local
 - cd <path> : change the directory
+- put <file> : upload file in the ftp server
+- rm [-d] path : remove a file from ftp server (-d to remove directories)
+- mkdir <folder> : create a folder in the ftp server
 - exit : exit the script
 """
 
@@ -99,6 +102,24 @@ def ftp_command(ftp, user, address):
                 print('Download success !')
             except :
                 print('File may not exist or you may not have permission to view it.')
+                elif commands[0] == 'put':
+            try:
+                ftp.storbinary('STOR {}'.format(commands[1]), open(commands[1], 'rb'))
+            except :
+                print("You may not have permission to upload")
+        elif commands[0] == 'mkdir':
+            try:
+                ftp.mkd(commands[1])
+            except :
+                print("You may not have permission to create folder")
+        elif commands[0] == 'rm':
+            try:
+                if commands[1] == '-d' or commands[1] == '-D':
+                    ftp.rmd(commands[2])
+                else:
+                    ftp.delete(commands[1])
+            except :
+                print("You may not have permission to delete file or folder")
         elif commands[0] == 'ls':
             if len(commands) == 1:
                 ftp.dir()
