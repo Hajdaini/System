@@ -3,7 +3,6 @@
 import ftplib
 import os
 import re
-from getpass import getpass
 import commands
 
 # Donnees de connexion par defaut
@@ -92,7 +91,7 @@ while state != "connected":
     tmp = input("FTP User ({}): ".format(user))
     user = tmp if tmp != "" else user
 
-    tmp = getpass("FTP Password: ")
+    tmp = input("FTP Password: ")
     password = tmp if tmp != "" else password
 
     tmp = input("FTP Port ({}): ".format(port))
