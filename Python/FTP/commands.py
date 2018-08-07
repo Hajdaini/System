@@ -37,7 +37,7 @@ def get(args, ftp, address, user):
         if is_ftp_dir(ftp, args[1]):
             download_ftp_tree(ftp, commands[1])
         else:
-            ftp.retrbinary('RETR ' + commands[1], open(commands[1], 'wb').write)
+            ftp.retrbinary('RETR ' + args[1], open(args[1], 'wb').write)
         print('Download success !')
     except :
         print('File may not exist or you may not have permission to view it.')
