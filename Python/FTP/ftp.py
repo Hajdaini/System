@@ -102,7 +102,7 @@ def ftp_command(ftp, user, address):
                 print('Download success !')
             except :
                 print('File may not exist or you may not have permission to view it.')
-                elif commands[0] == 'put':
+        elif commands[0] == 'put':
             try:
                 ftp.storbinary('STOR {}'.format(commands[1]), open(commands[1], 'rb'))
             except :
