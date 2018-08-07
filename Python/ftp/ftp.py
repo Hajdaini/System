@@ -3,12 +3,12 @@
 import ftplib
 import os
 import re
-import commands
+import importlib
 
 # Donnees de connexion par defaut
 state = "idle"
 address = "127.0.0.1"
-user = ""
+user = "nobody"
 password = ""
 port="21"
 tmp = ""
@@ -70,13 +70,18 @@ def download_tree(ftp_handle, path, overwrite=False):
 def interpreter(ftp, address="", user=""):
     while True:
         command = input("ftp://{}@{}:{} > ".format(user, address, ftp.pwd()))
+        if command == "":
+            continue
         command = command.split()
 
         try:
-           call = getattr(commands, command[0])
-           ftp = call(command, ftp, address, user)
+            cmd = importlib.import_module("commands.{}".format(command[0]))
+            cls = getattr(cmd, command[0])
+            cls = cls(command, ftp, address, user)
+            cls.call()
+            ftp = cls.ftp
         except:
-            print('Enter help to see the different commands')
+            print('command {} not found. Type help to see available commands'. format(command[0]))
         if command[0] == "exit":
             break
 
