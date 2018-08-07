@@ -45,20 +45,31 @@ def get(args, ftp, address, user):
     except :
         print('File may not exist or you may not have permission to view it.')
     return ftp
+i
+def put(args, ftp, address, user):
+    try:
+        file = "{}/{}".format(ftp.pwd(), args[1])
+        Oftp.storbinary('STR {}'.format(args[1]), open(file, 'rb'))
+    except :
+        print("You may not have permission to upload")
+    return ftp
 
 def mkdir(args, ftp, address, user):
     try:
-        ftp.mkd("{}/{}".format(ftp.pwd(), args[1]))
+        file = "{}/{}".format(ftp.pwd(), args[1])
+        ftp.mkd(file)
     except :
         print("You may not have permission to create folder")
     return ftp
 
 def rm(args, ftp, address, user):
     try:
+        file1 = "{}/{}".format(ftp.pwd(), args[1])
+        file2 = "{}/{}".format(ftp.pwd(), args[2])
         if args[1] == '-d' or args[1] == '-D':
-            ftp.rmd(i"{}/{}".format(ftp.pwd(), args[2]))
+            ftp.rmd(file2)
         else:
-            ftp.delete("{}/{}".format(ftp.pwd(), args[1]))
+            ftp.delete(file1)
     except :
         print("You may not have permission to delete file or folder")
     return ftp
