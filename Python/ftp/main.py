@@ -1,6 +1,6 @@
 #coding:utf-8
 
-from FTP import ftp
+import ftp
 from getpass import getpass
 
 # Donnees de connexion par defaut

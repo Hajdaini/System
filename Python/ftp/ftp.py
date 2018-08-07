@@ -3,7 +3,7 @@
 import ftplib
 import os
 import re
-from FTP import commands
+import commands
 
 
 def connect(address="127.0.0.1", user="", password="", port="21"):
