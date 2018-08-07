@@ -26,6 +26,12 @@ or
 make build
 ```
 
+If you edited source code use this command to recreate the final program:
+
+```sh
+make rebuild
+```
+
 ## Run live!
 
 To test the program without building it for testing or editing purposes, use command:
