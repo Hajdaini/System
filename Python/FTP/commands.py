@@ -46,12 +46,19 @@ def get(args, ftp, address, user):
         print('File may not exist or you may not have permission to view it.')
     return ftp
 
+def mkdir(args, ftp, address, user):
+    try:
+        ftp.mkd("{}/{}".format(ftp.pwd(), args[1]))
+    except :
+        print("You may not have permission to create folder")
+    return ftp
+
 def rm(args, ftp, address, user):
     try:
         if args[1] == '-d' or args[1] == '-D':
-            ftp.rmd(args[2])
+            ftp.rmd(i"{}/{}".format(ftp.pwd(), args[2]))
         else:
-            ftp.delete(args[1])
+            ftp.delete("{}/{}".format(ftp.pwd(), args[1]))
     except :
         print("You may not have permission to delete file or folder")
     return ftp
