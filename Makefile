@@ -18,8 +18,12 @@ freeze:
 	@ echo "Creation du repertoire $(NAME)"
 	@mv build $(NAME)
 
-setup: setup_vsftpd setup_pip setup_cxfreeze
+setup: setup_python3 setup_vsftpd setup_pip setup_cxfreeze
 	@ echo "Dependances installees"
+
+setup_python3:
+	@ echo "Installation de python3"
+	@ sudo apt-get install python3
 
 setup_vsftpd:
 	@ echo "Installation du serveur FTP: vsftpd"
