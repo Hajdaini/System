@@ -40,3 +40,6 @@ setup_cxfreeze:
 clean:
 	@ echo "Suppression du repertoire $(NAME)"
 	@ /bin/rm -rf $(NAME)
+
+rebuild: clean build
+
