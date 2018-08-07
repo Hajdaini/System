@@ -1,7 +1,6 @@
 import ftplib
 import os
 import re
-from getpass import getpass
 
 
 help_content = """
@@ -10,18 +9,27 @@ help_content = """
 - cat [path] : read data from files
 - get [path] : download a file or directory (recursively) from ftp to local
 - cd <path> : change the directory
+- put <file> : upload file in the ftp server
+- rm [-d] path : remove a file from ftp server (-d to remove directories)
+- mkdir <folder> : create a folder in the ftp server
 - exit : exit the script
 """
 
 
-def connect(address, user, password, port):
+def ftp_connect():
     while True:
+        user = input('Please enter FTP user: ')
+        password = input('Please enter FTP password: ')
+        address = input('Please enter FTP address: ')
         try:
             ftp = ftplib.FTP(address, user, password)
-            ftp.connect(address, int(port))
-            return ("connected", ftp)
+            print(ftp.getwelcome())
+            print("----------------------------------")
+            print('Enter help to see the different commands')
+            ftp_command(ftp, user, address)
+            break
         except ftplib.all_errors as e:
-            return ("failed", e)
+            print(e)
 
 
 def is_ftp_dir(ftp_handle, name):
@@ -94,6 +102,24 @@ def ftp_command(ftp, user, address):
                 print('Download success !')
             except :
                 print('File may not exist or you may not have permission to view it.')
+        elif commands[0] == 'put':
+            try:
+                ftp.storbinary('STOR {}'.format(commands[1]), open(commands[1], 'rb'))
+            except :
+                print("You may not have permission to upload")
+        elif commands[0] == 'mkdir':
+            try:
+                ftp.mkd(commands[1])
+            except :
+                print("You may not have permission to create folder")
+        elif commands[0] == 'rm':
+            try:
+                if commands[1] == '-d' or commands[1] == '-D':
+                    ftp.rmd(commands[2])
+                else:
+                    ftp.delete(commands[1])
+            except :
+                print("You may not have permission to delete file or folder")
         elif commands[0] == 'ls':
             if len(commands) == 1:
                 ftp.dir()
@@ -110,31 +136,4 @@ def ftp_command(ftp, user, address):
         else:
             print('Enter help to see the different commands')
 
-# Donnees de connexion par defaut
-state = "idle"
-address = "127.0.0.1"
-user = ""
-password = ""
-port="21"
-tmp = ""
-
-# connecteur
-while state != "connected":
-    if state == "error":
-        print("\nFTP failed to connect: {}".format(res))
-
-    tmp = input("FTP Host ({}): ".format(address))
-    address = tmp if tmp != "" else address
-
-    tmp = input("FTP User ({}): ".format(user))
-    user = tmp if tmp != "" else user
-
-    tmp = getpass("FTP Password: ")
-    password = tmp if tmp != "" else password
-
-    tmp = input("FTP Port ({}): ".format(port))
-    port = tmp if tmp != "" else port
-
-    state, res = connect(address, user, password, port)
-
-ftp_command(res, user, address)
+ftp_connect()
