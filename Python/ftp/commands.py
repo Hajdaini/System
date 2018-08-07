@@ -6,6 +6,9 @@ help_content = """
 - cat [path] : read data from files
 - get [path] : download a file or directory (recursively) from ftp to local
 - cd <path> : change the directory
+- put <file> : upload file in the ftp server
+- rm [-d] path : remove a file from ftp server (-d to remove directories)
+- mkdir <folder> : create a folder in the ftp server
 - exit : exit the script
 """
 
