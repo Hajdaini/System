@@ -13,23 +13,15 @@ help_content = """
 """
 
 
-def ftp_connect():
-    while True:
-        user = input('Please enter FTP user: ')
-        password = input('Please enter FTP address: ')
-        address = input('Please enter FTP address: ')
+def connect(address="127.0.0.1", user="", password="", port="21"):
         try:
             ftp = ftplib.FTP(address, user, password)
-            print(ftp.getwelcome())
-            print("----------------------------------")
-            print('Enter help to see the different commands')
-            ftp_command(ftp, user, address)
-            break
+            return ("connected", ftp)
         except ftplib.all_errors as e:
-            print(e)
+            return ("error", e)
 
 
-def is_ftp_dir(ftp_handle, name):
+def is_dir(ftp_handle, name):
     r1 = re.findall(r"type=(file|dir)", ftp_handle.sendcmd('MLST {}'.format(name)))
     type = ''.join(r1)
     return type == "dir"
@@ -73,7 +65,7 @@ def download_ftp_tree(ftp_handle, path, overwrite=False):
     os.chdir(original_directory)
 
 
-def ftp_command(ftp, user, address):
+def command(ftp, user, address):
     while True:
         command = input("ftp://{}@{}:{} > ".format(user, address, ftp.pwd()))
         commands = command.split()
@@ -114,5 +106,3 @@ def ftp_command(ftp, user, address):
             break
         else:
             print('Enter help to see the different commands')
-
-ftp_connect()
