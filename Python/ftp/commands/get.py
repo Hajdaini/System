@@ -10,8 +10,8 @@ class get(Command):
         try:
             file = "{}/{}".format(self.ftp.pwd(), self.argv[1])
             print("Downloading ...")
-            if is_dir(self.ftp, file):
-                download_tree(self.ftp, file)
+            if self.ftp.is_dir(file):
+                self.ftp.download_tree(file)
             else:
                 self.ftp.retrbinary('RETR ' + self.argv[1], open(self.argv[1], 'wb').write)
             print('Download success !')
