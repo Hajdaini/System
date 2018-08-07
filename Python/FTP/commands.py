@@ -23,28 +23,34 @@ def ls(args, ftp, address, user):
         ftp.dir(args[1])
     else:
         print("Error (Usage : ls <path>)")
+    return ftp
 
 def cat(args, ftp, address, user):
     try:
-        with open(args[1], "r") as file:
+        with open("{}/{}".format(ftp.pwd(), args[1]), "r") as file:
             print(file.read())
     except :
         print('File may not exist or you may not have permission to access it.')
+    return ftp
 
 def get(args, ftp, address, user):
     try:
+        file = "{}/{}".format(ftp.pwd(), args[1])
         print("Downloading ...")
-        if is_ftp_dir(ftp, args[1]):
-            download_ftp_tree(ftp, commands[1])
+        if is_dir(ftp, file):
+            download_tree(ftp, file)
         else:
             ftp.retrbinary('RETR ' + args[1], open(args[1], 'wb').write)
         print('Download success !')
     except :
         print('File may not exist or you may not have permission to view it.')
+    return ftp
 
 def help(args, ftp, address, user):
     print(help_content)
+    return ftp
 
 def exit(args, ftp, address, user):
     ftp.quit()
     print('Goodbye!')
+    return ftp
