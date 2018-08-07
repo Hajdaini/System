@@ -3,7 +3,16 @@
 import ftplib
 import os
 import re
+from getpass import getpass
 import commands
+
+# Donnees de connexion par defaut
+state = "idle"
+address = "127.0.0.1"
+user = ""
+password = ""
+port="21"
+tmp = ""
 
 
 def connect(address="127.0.0.1", user="", password="", port="21"):
@@ -71,3 +80,25 @@ def interpreter(ftp, address="", user=""):
             print('Enter help to see the different commands')
         if command[0] == "exit":
             break
+
+# connecteur
+while state != "connected":
+    if state == "error":
+        print("\nFTP failed to connect: {}".format(res))
+
+    tmp = input("FTP Host ({}): ".format(address))
+    address = tmp if tmp != "" else address
+
+    tmp = input("FTP User ({}): ".format(user))
+    user = tmp if tmp != "" else user
+
+    tmp = getpass("FTP Password: ")
+    password = tmp if tmp != "" else password
+
+    tmp = input("FTP Port ({}): ".format(port))
+    port = tmp if tmp != "" else port
+
+    state, res = connect(address, user, password, port)
+
+# Interpreteur
+interpreter(res, address, user)
