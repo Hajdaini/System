@@ -28,7 +28,7 @@ def ls(args, ftp, address, user):
 def cat(args, ftp, address, user):
     try:
         file = "{}/{}".format(ftp.pwd(), args[1])
-        with open(file, args[1]), "r") as file:
+        with open(file, "r") as file:
             print(file.read())
     except :
         print('File may not exist or you may not have permission to access it.')

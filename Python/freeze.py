@@ -7,5 +7,9 @@ setup(
     name = "ftp",
     version = "0.0.1",
     description = "Script de gestion FTP",
-    executables = [Executable("{}/main.py".format(dir_path))]
+    executables = [
+        Executable("{}/main.py".format(dir_path)),
+        Executable("{}/FTP/ftp.py".format(dir_path)),
+        Executable("{}/FTP/commands.py".format(dir_path))
+    ]
 )
