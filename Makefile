@@ -9,7 +9,8 @@ run:
 	@ python3 ./Python/main.py
 
 freeze:
-	@ 
+	@ python3 ./Python/freeze.py build
+	@mv build Build
 
 setup: setup_vsftpd setup_cxfreeze
 
