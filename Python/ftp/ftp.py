@@ -130,6 +130,12 @@ while exit == False:
         if len(command) == 0:
             print("Syntax Error: Part of given command line is invalid")
             break
+        cmd = importlib.import_module("commands.{}".format(command[0]))
+        cls = getattr(cmd, command[0])
+        cls = cls(command, ftp, address, user)
+        cls.call()
+        ftp = cls.ftp
+        """
         try:
             cmd = importlib.import_module("commands.{}".format(command[0]))
             cls = getattr(cmd, command[0])
@@ -139,6 +145,7 @@ while exit == False:
         except:
             warning('command {} not found. Type help to see available commands'. format(command[0]))
             break
+        """
         if command[0] == "exit":
             exit = True
             break
