@@ -103,7 +103,7 @@ while state != "connected":
         tmp = input("FTP Port ({}): ".format(port))
         port = tmp if tmp != "" else port
     except KeyboardInterrupt:
-        print("\nGood Bye {}!".format(user))
+        color("\n[b]Good Bye {}![/b]".format(user), True)
         sys.exit(1)
     state, ftp = connect(address, user, password, port)
 

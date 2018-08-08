@@ -29,6 +29,9 @@ def color(str, display = False):
     else:
         print(str)
 
+def cprint(text):
+    color(text, True)
+
 def info(str):
     color("[blue][b][INFO][/endc] [blue]{}[/blue]".format(str), True)
 

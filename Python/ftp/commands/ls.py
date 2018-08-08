@@ -6,6 +6,19 @@ from color import warning, color
 from capture import Capture
 
 class ls(Command):
+    """
+    NAME: ls
+
+    Lists the folder's content
+
+    SYNOPSIS:
+
+    ls
+
+    DESCRIPTION:
+
+    Called with no arguments. It is designed to display a folder's content like a regular ls -l call.
+    """
     def __init__(self, args, ftp, address, user):
         Command.__init__(self, args, ftp, address, user)
 
