@@ -3,6 +3,7 @@
 #--------------------------------------
 # Imports
 #--------------------------------------
+
 import ftplib
 import os
 import re
@@ -10,15 +11,8 @@ import importlib
 from color import *
 
 #--------------------------------------
-# Default connection settings
+# Ftp class
 #--------------------------------------
-state = "idle"
-address = "127.0.0.1"
-user = ""
-password = ""
-port="21"
-acct = ""
-tmp = ""
 
 class Ftp(ftplib.FTP):
     def __init__(self, address, user, password, acct):
@@ -63,6 +57,18 @@ class Ftp(ftplib.FTP):
             else:
                 self.download_file(item, item, overwrite)
 
+#--------------------------------------
+# Default connection settings
+#--------------------------------------
+
+state = "idle"
+address = "127.0.0.1"
+user = ""
+password = ""
+port="21"
+acct = ""
+debugging = 0
+tmp = ""
 
 #--------------------------------------
 # Connector
@@ -95,7 +101,14 @@ while state != "connected":
     tmp = input("FTP Account Name ({}): ".format(acct))
     acct = tmp if tmp != "" else acct
 
+    tmp = input("FTP Debug Mode ({}): ".format(debugging))
+    debugging = tmp if tmp != "" else debugging
+
     state, ftp = connect(address, user, password, port, acct)
+
+# Preparing server
+ftp.encoding = 'utf-8'
+ftp.debugging = int(debugging)
 
 # print welcome message
 success("You are now connected to server")
@@ -124,7 +137,7 @@ while exit == False:
             cls.call()
             ftp = cls.ftp
         except:
-            print('command {} not found. Type help to see available commands'. format(command[0]))
+            warning('command {} not found. Type help to see available commands'. format(command[0]))
             break
         if command[0] == "exit":
             exit = True

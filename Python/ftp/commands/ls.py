@@ -2,6 +2,8 @@
 
 from commands.Command import Command
 
+from color import warning
+
 class ls(Command):
     def __init__(self, args, ftp, address, user):
         Command.__init__(self, args, ftp, address, user)
@@ -12,4 +14,4 @@ class ls(Command):
         elif self.argc == 2:
             self.ftp.dir(self.argv[1])
         else:
-            print("Error (Usage : ls <path>)")
+            warning("(Usage : ls <path>)")
