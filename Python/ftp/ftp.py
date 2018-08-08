@@ -12,6 +12,7 @@ import importlib
 from getpass import getpass
 from color import *
 from capture import Capture
+import sys
 
 #--------------------------------------
 # Ftp class
@@ -89,19 +90,21 @@ def connect(address="127.0.0.1", user="", password="", port="21"):
 while state != "connected":
     if state == "failed":
         error("FTP failed to connect: {}".format(ftp))
+    try:
+        tmp = input("FTP Host ({}): ".format(address))
+        address = tmp if tmp != "" else address
 
-    tmp = input("FTP Host ({}): ".format(address))
-    address = tmp if tmp != "" else address
+        tmp = input("FTP User ({}): ".format(user))
+        user = tmp if tmp != "" else user
 
-    tmp = input("FTP User ({}): ".format(user))
-    user = tmp if tmp != "" else user
+        tmp = getpass("FTP Password: ")
+        password = tmp if tmp != "" else password
 
-    tmp = getpass("FTP Password: ")
-    password = tmp if tmp != "" else password
-
-    tmp = input("FTP Port ({}): ".format(port))
-    port = tmp if tmp != "" else port
-
+        tmp = input("FTP Port ({}): ".format(port))
+        port = tmp if tmp != "" else port
+    except KeyboardInterrupt:
+        print("\nGood Bye {}!".format(user))
+        sys.exit(1)
     state, ftp = connect(address, user, password, port)
 
 # Preparing server
@@ -116,7 +119,11 @@ color("\n[b]Welcome {}![/b] I am:\n{}\n".format(user, ftp.getwelcome()), True)
 # --------------------------------------
 
 while True:
-    commands = input(color("[b][green]ftp://{}@{}:[blue]{}[/endc][b]$>[/endc] ".format(user, address, ftp.pwd())))
+    try:
+        commands = input(color("[b][green]ftp://{}@{}:[blue]{}[/endc][b]$>[/endc] ".format(user, address, ftp.pwd())))
+    except KeyboardInterrupt:
+        print("\nGood Bye {}!".format(user))
+        sys.exit(1)
     if commands == "":
         continue
     commands = commands.split(" & ")
