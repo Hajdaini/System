@@ -8,7 +8,7 @@ class touch(Command):
         Command.__init__(self, args, ftp, address, user)
 
     def call(self):
-        #try:
-        self.ftp.storbinary('STOR {}'.format(self.argv[1]), io.BytesIO(b''))
-        #except e:
-            #print('Directory may not exist or you may not have permission to view it. ' e)
+        try:
+            self.ftp.storbinary('STOR {}'.format(self.argv[1]), io.BytesIO(b''))
+        except e:
+            print('Directory may not exist or you may not have permission to view it. ' e)
