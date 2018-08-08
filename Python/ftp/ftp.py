@@ -88,7 +88,7 @@ def connect(address="127.0.0.1", user="", password="", port="21"):
 
 while state != "connected":
     if state == "failed":
-        error("FTP failed to connect: {}".format(res))
+        error("FTP failed to connect: {}".format(ftp))
 
     tmp = input("FTP Host ({}): ".format(address))
     address = tmp if tmp != "" else address
