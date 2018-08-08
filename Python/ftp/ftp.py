@@ -1,11 +1,17 @@
 #coding:utf-8
 
+#--------------------------------------
+# Imports
+#--------------------------------------
 import ftplib
 import os
 import re
 import importlib
+from color import *
 
-# Donnees de connexion par defaut
+#--------------------------------------
+# Default connection settings
+#--------------------------------------
 state = "idle"
 address = "127.0.0.1"
 user = ""
@@ -58,8 +64,9 @@ class Ftp(ftplib.FTP):
                 self.download_file(item, item, overwrite)
 
 
-
-
+#--------------------------------------
+# Connector
+#--------------------------------------
 
 def connect(address="127.0.0.1", user="", password="", port="21", acct=""):
         try:
@@ -69,37 +76,9 @@ def connect(address="127.0.0.1", user="", password="", port="21", acct=""):
         except ftplib.all_errors as e:
             return ("failed", e)
 
-
-def interpreter(ftp, address="", user=""):
-    exit = False
-    while exit == False:
-        commands = input("ftp://{}@{}:{} > ".format(user, address, ftp.pwd()))
-        if commands == "":
-            continue
-        commands = commands.split(" & ")
-
-        for command in commands:
-            command = command.split()
-            if len(command) == 0:
-                print("Syntax Error: Part of given command line is invalid")
-                break
-            try:
-                cmd = importlib.import_module("commands.{}".format(command[0]))
-                cls = getattr(cmd, command[0])
-                cls = cls(command, ftp, address, user)
-                cls.call()
-                ftp = cls.ftp
-            except:
-                print('command {} not found. Type help to see available commands'. format(command[0]))
-                break
-            if command[0] == "exit":
-                exit = True
-                break
-
-# connecteur
 while state != "connected":
-    if state == "error":
-        print("\nFTP failed to connect: {}".format(res))
+    if state == "failed":
+        error("FTP failed to connect: {}".format(res))
 
     tmp = input("FTP Host ({}): ".format(address))
     address = tmp if tmp != "" else address
@@ -116,10 +95,37 @@ while state != "connected":
     tmp = input("FTP Account Name ({}): ".format(acct))
     acct = tmp if tmp != "" else acct
 
-    state, res = connect(address, user, password, port, acct)
+    state, ftp = connect(address, user, password, port, acct)
 
 # print welcome message
-print("\nWelcome {}! I am:\n{}\n".format(user, res.getwelcome()))
+success("You are now connected to server")
+color("\n[b]Welcome {}![/b] I am:\n{}\n".format(user, ftp.getwelcome()), True)
 
-# Interpreteur
-interpreter(res, address, user)
+#--------------------------------------
+# Interpreter
+# --------------------------------------
+
+exit = False
+while exit == False:
+    commands = input(color("[b][green]ftp://{}@{}:[blue]{}[/endc][b]$>[/endc] ".format(user, address, ftp.pwd())))
+    if commands == "":
+        continue
+    commands = commands.split(" & ")
+
+    for command in commands:
+        command = command.split()
+        if len(command) == 0:
+            print("Syntax Error: Part of given command line is invalid")
+            break
+        try:
+            cmd = importlib.import_module("commands.{}".format(command[0]))
+            cls = getattr(cmd, command[0])
+            cls = cls(command, ftp, address, user)
+            cls.call()
+            ftp = cls.ftp
+        except:
+            print('command {} not found. Type help to see available commands'. format(command[0]))
+            break
+        if command[0] == "exit":
+            exit = True
+            break
