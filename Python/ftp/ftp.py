@@ -19,8 +19,8 @@ import sys
 #--------------------------------------
 
 class Ftp(ftplib.FTP):
-    def __init__(self):
-        ftplib.FTP.__init__(self)
+    def __init__(self, host="127.0.0.1", timeout=30):
+        ftplib.FTP.__init__(self, host, timeout=timeout)
 
     def is_dir(self, name):
         r1 = re.findall(r"type=(file|dir)", self.sendcmd('MLST {}'.format(name)))
@@ -69,20 +69,19 @@ state = "idle"
 address = "127.0.0.1"
 user = ""
 password = ""
-port="21"
+port=21
+timeout=30
 tmp = ""
 
 #--------------------------------------
 # Connector
 #--------------------------------------
 
-def connect(address="127.0.0.1", user="", password="", port="21"):
+def connect(address="127.0.0.1", user="", password="", port="21", timeout=30):
         try:
-            ftp = Ftp()
+            ftp = Ftp(address, timeout)
             ftp.connect(address, int(port))
             ftp.login(user, password)
-            # ftp = Ftp(address, user, password)
-            # ftp.connect(address, int(port))
             return ("connected", ftp)
         except ftplib.all_errors as e:
             return ("failed", e)
@@ -101,11 +100,15 @@ while state != "connected":
         password = tmp if tmp != "" else password
 
         tmp = input("FTP Port ({}): ".format(port))
-        port = tmp if tmp != "" else port
+        port = int(tmp) if tmp != "" else port
+
+        tmp = input("FTP Connection Timeout ({} seconds): ".format(timeout))
+        timeout = int(tmp) if tmp != "" else timeout
+
     except KeyboardInterrupt:
         color("\n[b]Good Bye {}![/b]".format(user), True)
         sys.exit(1)
-    state, ftp = connect(address, user, password, port)
+    state, ftp = connect(address, user, password, port, timeout)
 
 # Preparing server
 ftp.encoding = 'utf-8'
