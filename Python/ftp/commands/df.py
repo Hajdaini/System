@@ -2,7 +2,7 @@
 
 import re
 from commands.Command import Command
-from color import *
+from modules.color import *
 
 
 class df(Command):

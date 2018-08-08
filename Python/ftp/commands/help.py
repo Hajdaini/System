@@ -4,7 +4,7 @@ import importlib
 import pkgutil
 import commands
 from commands.Command import Command
-from color import warning, color
+from modules.color import warning, color
 
 class help(Command):
     """

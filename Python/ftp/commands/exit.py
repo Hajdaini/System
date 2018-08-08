@@ -1,7 +1,7 @@
 #coding:utf-8
 
 from commands.Command import Command
-from color import color
+from modules.color import color
 
 class exit(Command):
     def __init__(self, args, ftp, address, user):

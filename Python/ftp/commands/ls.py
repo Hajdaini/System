@@ -2,8 +2,8 @@
 
 from commands.Command import Command
 
-from color import warning, color
-from capture import Capture
+from modules.color import warning, color
+from modules.capture import Capture
 
 class ls(Command):
     """

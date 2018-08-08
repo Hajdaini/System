@@ -11,9 +11,9 @@ import re
 import sys
 import importlib
 from getpass import getpass
-from color import *
-from capture import Capture
-from Ftp import Ftp
+from modules.color import *
+from modules.capture import Capture
+from modules.Ftp import Ftp
 
 #--------------------------------------
 # Default connection settings
