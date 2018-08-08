@@ -8,14 +8,15 @@ import importlib
 # Donnees de connexion par defaut
 state = "idle"
 address = "127.0.0.1"
-user = "nobody"
+user = ""
 password = ""
 port="21"
+acct = ""
 tmp = ""
 
 class Ftp(ftplib.FTP):
-    def __init__(self, address, user, password):
-        ftplib.FTP.__init__(self, address, user, password)
+    def __init__(self, address, user, password, acct):
+        ftplib.FTP.__init__(self, address, user, password, acct)
 
     def is_dir(self, name):
         r1 = re.findall(r"type=(file|dir)", self.sendcmd('MLST {}'.format(name)))
@@ -60,9 +61,9 @@ class Ftp(ftplib.FTP):
 
 
 
-def connect(address="127.0.0.1", user="", password="", port="21"):
+def connect(address="127.0.0.1", user="", password="", port="21", acct=""):
         try:
-            ftp = Ftp(address, user, password)
+            ftp = Ftp(address, user, password, acct)
             # ftp.connect(address, int(port))
             return ("connected", ftp)
         except ftplib.all_errors as e:
@@ -70,22 +71,30 @@ def connect(address="127.0.0.1", user="", password="", port="21"):
 
 
 def interpreter(ftp, address="", user=""):
-    while True:
-        command = input("ftp://{}@{}:{} > ".format(user, address, ftp.pwd()))
-        if command == "":
+    exit = False
+    while exit == False:
+        commands = input("ftp://{}@{}:{} > ".format(user, address, ftp.pwd()))
+        if commands == "":
             continue
-        command = command.split()
+        commands = commands.split(" & ")
 
-        try:
-            cmd = importlib.import_module("commands.{}".format(command[0]))
-            cls = getattr(cmd, command[0])
-            cls = cls(command, ftp, address, user)
-            cls.call()
-            ftp = cls.ftp
-        except:
-            print('command {} not found. Type help to see available commands'. format(command[0]))
-        if command[0] == "exit":
-            break
+        for command in commands:
+            command = command.split()
+            if len(command) == 0:
+                print("Syntax Error: Part of given command line is invalid")
+                break
+            try:
+                cmd = importlib.import_module("commands.{}".format(command[0]))
+                cls = getattr(cmd, command[0])
+                cls = cls(command, ftp, address, user)
+                cls.call()
+                ftp = cls.ftp
+            except:
+                print('command {} not found. Type help to see available commands'. format(command[0]))
+                break
+            if command[0] == "exit":
+                exit = True
+                break
 
 # connecteur
 while state != "connected":
@@ -104,7 +113,13 @@ while state != "connected":
     tmp = input("FTP Port ({}): ".format(port))
     port = tmp if tmp != "" else port
 
-    state, res = connect(address, user, password, port)
+    tmp = input("FTP Account Name ({}): ".format(acct))
+    acct = tmp if tmp != "" else acct
+
+    state, res = connect(address, user, password, port, acct)
+
+# print welcome message
+print("\nWelcome {}! I am:\n{}\n".format(user, res.getwelcome()))
 
 # Interpreteur
 interpreter(res, address, user)
