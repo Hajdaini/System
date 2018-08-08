@@ -69,7 +69,7 @@ ftp.encoding = 'utf-8'
 
 # print welcome message
 success("You are now connected to server")
-color("\n[b]Welcome {}![/b] I am:\n{}\n".format(user, ftp.getwelcome()), True)
+cprint("\n[b]Welcome {}![/b] I am:\n{}\n".format(user, ftp.getwelcome()))
 
 #--------------------------------------
 # Interpreter
