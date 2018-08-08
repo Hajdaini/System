@@ -2,7 +2,8 @@
 
 from commands.Command import Command
 
-from color import warning
+from color import warning, color
+from capture import Capture
 
 class ls(Command):
     def __init__(self, args, ftp, address, user):
@@ -10,8 +11,19 @@ class ls(Command):
 
     def call(self):
         if self.argc == 1:
-            self.ftp.dir()
+            with Capture() as output:
+                self.ftp.dir()
+            self.colorize(output)
         elif self.argc == 2:
-            self.ftp.dir(self.argv[1])
+            with Capture() as output:
+                self.ftp.dir(self.argv[1])
+            self.colorize(output)
         else:
             warning("(Usage : ls <path>)")
+
+    def colorize(self, list):
+        for el in list:
+            spl = el.split()
+            if spl[0][0] == "d":
+                spl[len(spl) - 1] = "[b][blue]{}[/endc]".format(spl[len(spl) - 1])
+            color(" ".join(spl), True)

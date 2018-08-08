@@ -11,6 +11,7 @@ import re
 import importlib
 from getpass import getpass
 from color import *
+from capture import Capture
 
 #--------------------------------------
 # Ftp class
@@ -119,27 +120,46 @@ while True:
     if commands == "":
         continue
     commands = commands.split(" & ")
-
-    for command in commands:
-        command = command.split()
-        if len(command) == 0:
+    for pipes in commands:
+        stdin = None
+        if len(pipes) == 0:
             print("Syntax Error: Part of given command line is invalid")
             break
-        """
-        cmd = importlib.import_module("commands.{}".format(command[0]))
-        cls = getattr(cmd, command[0])
-        cls = cls(command, ftp, address, user)
-        cls.call()
-        ftp = cls.ftp
-        """
-        try:
+        pipes = pipes.split(" | ")
+        for idx, pipe in enumerate(pipes):
+            if len(pipe) == 0:
+                print("Syntax Error: Part of given command line is invalid")
+                break
+            pipe = pipe.split()
+            if stdin != None and len(stdin):
+                stdin.insert(0, pipe[0])
+                command = stdin
+            else:
+                command = pipe
+            """
+            print("{} {}".format(pipe, command))
             cmd = importlib.import_module("commands.{}".format(command[0]))
             cls = getattr(cmd, command[0])
             cls = cls(command, ftp, address, user)
-            cls.call()
+            with Capture() as stdin:
+                cls.call()
+            if idx == len(pipes) - 1 and stdin != None and len(stdin):
+                for str in stdin:
+                    print(str)
             ftp = cls.ftp
-        except:
-            warning('command {} not found. Type help to see available commands'. format(command[0]))
-            break
-        if command[0] == "exit":
-            sys.exit(1)
+            """
+            try:
+                cmd = importlib.import_module("commands.{}".format(command[0]))
+                cls = getattr(cmd, command[0])
+                cls = cls(command, ftp, address, user)
+                with Capture() as stdin:
+                    cls.call()
+                if idx == len(pipes) - 1 and stdin != None and len(stdin):
+                    for str in stdin:
+                        print(str)
+                ftp = cls.ftp
+            except:
+                warning('command {} not found. Type help to see available commands'. format(command[0]))
+                break
+            if command[0] == "exit":
+                sys.exit(1)
