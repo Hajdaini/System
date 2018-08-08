@@ -4,10 +4,12 @@
 # Imports
 #--------------------------------------
 
+import sys
 import ftplib
 import os
 import re
 import importlib
+from getpass import getpass
 from color import *
 
 #--------------------------------------
@@ -15,8 +17,8 @@ from color import *
 #--------------------------------------
 
 class Ftp(ftplib.FTP):
-    def __init__(self, address, user, password, acct):
-        ftplib.FTP.__init__(self, address, user, password, acct)
+    def __init__(self):
+        ftplib.FTP.__init__(self)
 
     def is_dir(self, name):
         r1 = re.findall(r"type=(file|dir)", self.sendcmd('MLST {}'.format(name)))
@@ -66,17 +68,18 @@ address = "127.0.0.1"
 user = ""
 password = ""
 port="21"
-acct = ""
-debugging = 0
 tmp = ""
 
 #--------------------------------------
 # Connector
 #--------------------------------------
 
-def connect(address="127.0.0.1", user="", password="", port="21", acct=""):
+def connect(address="127.0.0.1", user="", password="", port="21"):
         try:
-            ftp = Ftp(address, user, password, acct)
+            ftp = Ftp()
+            ftp.connect(address, int(port))
+            ftp.login(user, password)
+            # ftp = Ftp(address, user, password)
             # ftp.connect(address, int(port))
             return ("connected", ftp)
         except ftplib.all_errors as e:
@@ -92,23 +95,16 @@ while state != "connected":
     tmp = input("FTP User ({}): ".format(user))
     user = tmp if tmp != "" else user
 
-    tmp = input("FTP Password: ")
+    tmp = getpass("FTP Password: ")
     password = tmp if tmp != "" else password
 
     tmp = input("FTP Port ({}): ".format(port))
     port = tmp if tmp != "" else port
 
-    tmp = input("FTP Account Name ({}): ".format(acct))
-    acct = tmp if tmp != "" else acct
-
-    tmp = input("FTP Debug Mode ({}): ".format(debugging))
-    debugging = tmp if tmp != "" else debugging
-
-    state, ftp = connect(address, user, password, port, acct)
+    state, ftp = connect(address, user, password, port)
 
 # Preparing server
 ftp.encoding = 'utf-8'
-ftp.debugging = int(debugging)
 
 # print welcome message
 success("You are now connected to server")
@@ -118,8 +114,7 @@ color("\n[b]Welcome {}![/b] I am:\n{}\n".format(user, ftp.getwelcome()), True)
 # Interpreter
 # --------------------------------------
 
-exit = False
-while exit == False:
+while True:
     commands = input(color("[b][green]ftp://{}@{}:[blue]{}[/endc][b]$>[/endc] ".format(user, address, ftp.pwd())))
     if commands == "":
         continue
@@ -130,6 +125,7 @@ while exit == False:
         if len(command) == 0:
             print("Syntax Error: Part of given command line is invalid")
             break
+        """
         cmd = importlib.import_module("commands.{}".format(command[0]))
         cls = getattr(cmd, command[0])
         cls = cls(command, ftp, address, user)
@@ -145,7 +141,5 @@ while exit == False:
         except:
             warning('command {} not found. Type help to see available commands'. format(command[0]))
             break
-        """
         if command[0] == "exit":
-            exit = True
-            break
+            sys.exit(1)

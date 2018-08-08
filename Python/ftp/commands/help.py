@@ -30,7 +30,10 @@ class help(Command):
             try:
                 cmd = importlib.import_module("commands.{}".format(self.argv[1]))
                 cls = getattr(cmd, self.argv[1])
-                color(cls.__doc__, True)
+                if cls.__doc__ == None:
+                    warning("Unavailable documentation")
+                else:
+                    color(cls.__doc__, True)
             except:
                 warning("Command {} not found. Type help to get available commands".format(self.argv[1]))
         elif self.argc == 1:
