@@ -7,12 +7,15 @@ class rm(Command):
         Command.__init__(self, args, ftp, address, user)
 
     def call(self):
+        file = "{}/{}".format(self.ftp.pwd(), self.argv[1])
         try:
-            file1 = "{}/{}".format(self.ftp.pwd(), self.argv[1])
-            file2 = "{}/{}".format(self.ftp.pwd(), self.argvv[2])
+            folder = "{}/{}".format(self.ftp.pwd(), self.argv[2])
+        except:
+            pass
+        try:
             if self.argv[1] == '-d' or self.argv[1] == '-D':
-                self.ftp.rmd(file2)
+                self.ftp.rmd(folder)
             else:
-                self.ftp.delete(file1)
-        except :
-            print("You may not have permission to delete file or folder")
+                self.ftp.delete(file)
+        except:
+            print("You may not have permission to delete file or folder (use option -d to delete folder)")
