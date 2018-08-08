@@ -7,4 +7,5 @@ class echo(Command):
         Command.__init__(self, args, ftp, address, user)
 
     def call(self):
+        del self.argv[0]
         print(" ".join(self.argv))

@@ -132,8 +132,7 @@ while True:
                 break
             pipe = pipe.split()
             if stdin != None and len(stdin):
-                stdin.insert(0, pipe[0])
-                command = stdin
+                command = [pipe[0], stdin]
             else:
                 command = pipe
             """
@@ -157,6 +156,8 @@ while True:
                 if idx == len(pipes) - 1 and stdin != None and len(stdin):
                     for str in stdin:
                         print(str)
+                elif idx < len(pipes) - 1 and stdin != None and len(stdin):
+                    stdin = "\n".join(stdin)
                 ftp = cls.ftp
             except:
                 warning('command {} not found. Type help to see available commands'. format(command[0]))
