@@ -1,6 +1,7 @@
 #coding:utf-8
 
 from commands.Command import Command
+from modules.color import error
 
 class rm(Command):
     def __init__(self, args, ftp, address, user):
@@ -18,4 +19,4 @@ class rm(Command):
             else:
                 self.ftp.delete(file)
         except:
-            print("You may not have permission to delete file or folder (use option -d to delete folder)")
+            error("You may not have permission to delete file or folder (use option -d to delete folder)")
