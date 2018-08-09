@@ -89,4 +89,6 @@ class Ftp(FTP):
                 break
             print("Dans boucle: {} {}".format(pwd, cpath))
         print("Apres boucle: {} {}".format(pwd, cpath))
+        if (len(pwd))
+            pwd[0] = "/{}".format(pwd[0])
         return "{}/{}".format("/".join(pwd), "/".join(cpath))

@@ -11,10 +11,13 @@ class cat(Command):
     def call(self):
         #try:
         filename = self.ftp.abspath(self.argv[1])
+        print(filename)
+        """
         with open(filename, 'wb') as file:
             self.ftp.retrbinary('RETR %s' % filename, file.write)
         with open(filename, 'r') as file:
             print(file.read())
         os.remove(filename)
+        """
         #except:
             #error('File may not exist or you may not have permission to access it.')
