@@ -53,11 +53,8 @@ class Connector:
         """
         Tente de se connecter
         """
-        print("{}\n{}\n{}\n{}\n{}".format(self.address, self.user, self.password, self.port, self.timeout))
         try:
-            self.ftp = Ftp(self.address, self.timeout)
-            self.ftp.connect(self.address, self.port)
-            self.ftp.login(self.user, self.password)
+            self._connect()
             return ("connected", self.ftp)
         except ftplib.all_errors as e:
             return ("failed", e)
