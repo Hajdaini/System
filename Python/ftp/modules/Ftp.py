@@ -1,10 +1,20 @@
 #coding:utf-8
 
+import io
+import re
 from ftplib import FTP
 
 class Ftp(FTP):
     def __init__(self, host="127.0.0.1", timeout=30):
         FTP.__init__(self, host, timeout=timeout)
+
+    def exists(self, path):
+        return self.is_file(path) or self.is_dir(path)
+
+    def is_file(self, name):
+        r1 = re.findall(r"type=(file|dir)", self.sendcmd('MLST {}'.format(name)))
+        type = ''.join(r1)
+        return type == "file"
 
     def is_dir(self, name):
         r1 = re.findall(r"type=(file|dir)", self.sendcmd('MLST {}'.format(name)))
@@ -44,3 +54,30 @@ class Ftp(FTP):
                 self.mirror_dir(item, overwrite)
             else:
                 self.download_file(item, item, overwrite)
+
+    def create_file(self, path):
+        try:
+            self.storbinary('STOR {}'.format(path), io.BytesIO(b''))
+            return 0
+        except:
+            return 1
+
+    def create_directory(self, path):
+        try:
+            if path[0] != "/" and path[0] != ".":
+                path = "{}/{}".format(self.pwd(), path)
+            self.mkd(path)
+            return 0
+        except :
+             return 1
+
+    def abspath(self, path):
+        pwd = self.pwd().split("/")
+        path = path.split("/")
+        for el in path:
+            if el == ".." and len(pwd):
+                pwd.pop()
+                del path[0]
+            elif el == ".." or el == ".":
+                del path[0]
+        return "{}/{}".format("/".join(pwd), "/".join(path))

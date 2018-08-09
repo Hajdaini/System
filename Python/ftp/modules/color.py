@@ -32,6 +32,9 @@ def color(str, display = False):
 def cprint(text):
     color(text, True)
 
+def cinput(str):
+    return input(color(str))
+
 def info(str):
     color("[blue][b][INFO][/endc] [blue]{}[/blue]".format(str), True)
 
@@ -40,6 +43,9 @@ def success(str):
 
 def error(str):
     color("[fail][b][ERROR][/endc] [fail]{}[/fail]".format(str), True)
+
+def fatal(str):
+    color("[fail][b][FATAL ERROR][/endc] [fail]{}[/fail]".format(str), True)
 
 def warning(str):
     color("[warning][b][WARNING][/endc] [warning]{}[/warning]".format(str), True)
