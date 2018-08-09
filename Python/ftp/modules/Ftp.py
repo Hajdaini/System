@@ -72,6 +72,8 @@ class Ftp(FTP):
              return 1
 
     def abspath(self, path):
+        if path[0] == "/":
+            return path
         pwd = self.pwd().split("/")
         del pwd[0]
         cpath = path.split("/")

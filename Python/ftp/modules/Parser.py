@@ -51,6 +51,7 @@ class Parser:
                 if idx - clen and seq[idx - clen] == "|":
                     stdin = "\n".join(stdin)
                     cmd = [cmd[0], stdin]
+                print(cmd)
                 with Capture() as stdin:
                     self.execute(cmd)
                 if (idx - clen and seq[idx - clen] == "&") or idx == slen - 1:
