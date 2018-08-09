@@ -73,11 +73,18 @@ class Ftp(FTP):
 
     def abspath(self, path):
         pwd = self.pwd().split("/")
-        path = path.split("/")
-        for el in path:
+        del pwd[0]
+        cpath = path.split("/")
+        spath = path.split("/")
+        print("Avant boucle: {} {}".format(pwd, cpath))
+        for idx, el in enumerate(path.split("/")):
             if el == ".." and len(pwd):
                 pwd.pop()
-                del path[0]
+                del cpath[0]
             elif el == ".." or el == ".":
-                del path[0]
-        return "{}/{}".format("/".join(pwd), "/".join(path))
+                del cpath[0]
+            else:
+                break
+            print("Dans boucle: {} {}".format(pwd, cpath))
+        print("Apres boucle: {} {}".format(pwd, cpath))
+        return "{}/{}".format("/".join(pwd), "/".join(cpath))
