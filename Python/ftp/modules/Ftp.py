@@ -20,7 +20,8 @@ class Ftp(FTP):
         return type == "file"
 
     def is_dir(self, name):
-        r1 = re.findall(r"type=(file|dir)", self.sendcmd('MLST {}'.format(name)))
+        name = self.abspath(name)
+        r1 = re.findall(r"type=(file|dir)", self.sendcmd('NLST {}'.format(name)))
         type = ''.join(r1)
         return type == "dir"
 
@@ -80,18 +81,13 @@ class Ftp(FTP):
         pwd = self.pwd().split("/")
         del pwd[0]
         cpath = path.split("/")
-        spath = path.split("/")
-        #print("Avant boucle: {} {}".format(pwd, cpath))
         for idx, el in enumerate(path.split("/")):
-            if el == ".." and len(pwd):
-                pwd.pop()
+            if el == ".." or el == ".":
                 del cpath[0]
-            elif el == ".." or el == ".":
-                del cpath[0]
+                if el == ".." and len(pwd):
+                    pwd.pop()
             else:
                 break
-            #print("Dans boucle: {} {}".format(pwd, cpath))
-        #print("Apres boucle: {} {}".format(pwd, cpath))
         if (len(pwd)):
             pwd[0] = "/{}".format(pwd[0])
         return "{}/{}".format("/".join(pwd), "/".join(cpath))
