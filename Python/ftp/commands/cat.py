@@ -1,5 +1,6 @@
 #coding:utf-8
 
+import os
 from commands.Command import Command
 from modules.color import error
 
@@ -9,8 +10,11 @@ class cat(Command):
 
     def call(self):
         try:
-            file = "{}/{}".format(self.ftp.pwd(), self.argv[1])
-            with open(file, "r") as file:
+            filename = self.argv[1]
+            with open(filename, 'wb') as file:
+                self.ftp.retrbinary('RETR %s' % filename, file.write)
+            with open(filename, 'r') as file:
                 print(file.read())
-        except :
+            os.remove(filename)
+        except:
             error('File may not exist or you may not have permission to access it.')
