@@ -29,7 +29,8 @@ class ls(Command):
             self.colorize(output)
         elif self.argc == 2:
             with Capture() as output:
-                self.ftp.dir(self.argv[1])
+                file = self.ftp.abspath(self.argv[1])
+                self.ftp.dir(file)
             self.colorize(output)
         else:
             warning("(Usage : ls <path>)")
