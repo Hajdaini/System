@@ -1,6 +1,7 @@
 #coding:utf-8
 
 import io
+import os
 import re
 from ftplib import FTP
 
@@ -78,7 +79,7 @@ class Ftp(FTP):
         del pwd[0]
         cpath = path.split("/")
         spath = path.split("/")
-        print("Avant boucle: {} {}".format(pwd, cpath))
+        #print("Avant boucle: {} {}".format(pwd, cpath))
         for idx, el in enumerate(path.split("/")):
             if el == ".." and len(pwd):
                 pwd.pop()
@@ -87,8 +88,8 @@ class Ftp(FTP):
                 del cpath[0]
             else:
                 break
-            print("Dans boucle: {} {}".format(pwd, cpath))
-        print("Apres boucle: {} {}".format(pwd, cpath))
+            #print("Dans boucle: {} {}".format(pwd, cpath))
+        #print("Apres boucle: {} {}".format(pwd, cpath))
         if (len(pwd)):
             pwd[0] = "/{}".format(pwd[0])
         return "{}/{}".format("/".join(pwd), "/".join(cpath))

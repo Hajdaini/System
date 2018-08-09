@@ -5,6 +5,7 @@ import shlex
 import importlib
 from modules.Capture import Capture
 from modules.color import cprint, warning, cinput
+from commands.touch import touch
 
 class Parser:
     def __init__(self, ftp, address, user):
@@ -38,28 +39,55 @@ class Parser:
         Abalyse la sequence decomposee, recree les commandes et les execute
         """
         cmd = []
-        stdin = None
+        stdin = []
         seq = self.split(str)
         slen = len(seq)
+        prevredir = None
+        found_std = 0
         for idx, el in enumerate(seq):
-            if idx and seq[idx - 1] == "&":
-                stdin = None
-            if el != "&" and el != "|":
+            if not self.is_redir(el) and not self.is_std(el) and not found_std:
                 cmd.append(el)
-            if el == "&" or el == "|" or idx == slen - 1:
-                clen = len(cmd)
-                if idx - clen and seq[idx - clen] == "|":
-                    stdin = "\n".join(stdin)
-                    cmd = [cmd[0], stdin]
-                print(cmd)
+            if self.is_std(el):
+                found_std = 1
+            if el == "<":
+                try:
+                    cmd = self.read_file(seq[idx + 1])
+                except:
+                    warning("File not found")
+                    break
+            if el == ">":
+                try:
+                    cmd = self.write_file(cmd, seq[idx + 1])
+                except:
+                    warning("File not found")
+                    break
+            if el == ">>":
+                try:
+                    cmd = self.concat_file(cmd, seq[idx + 1])
+                except:
+                    warning("File not found")
+                    break
+            elif el == "<<":
+                try:
+                    cmd = self.read_stdin(seq[idx + 1])
+                except:
+                    warning("Cannot read from stdin")
+                    break
+            if self.is_redir(el) or idx == slen - 1:
+                #print(cmd)
+                if prevredir == "|":
+                    cmd = [cmd[0], "\n".join(stdin)]
+                #print(cmd)
                 with Capture() as stdin:
                     self.execute(cmd)
-                if (idx - clen and seq[idx - clen] == "&") or idx == slen - 1:
+                if idx == slen - 1 or el == "&":
                     for str in stdin:
                         cprint(str)
                 if cmd[0] == "exit":
                     sys.exit(1)
                 cmd = []
+            if self.is_redir(el) or idx == slen - 1:
+                prevredir = None if idx == slen - 1 else el
 
     def execute(self, cmd):
         """
@@ -85,3 +113,31 @@ class Parser:
         cls = cls(cmd, self.ftp, self.address, self.user)
         cls.call()
         self.ftp = cls.ftp
+
+    def is_redir(self, el):
+        """
+        Definit si un element de la sequence de commandes correspond a un lien ()&, |
+        """
+        return el == "&" or el == "|"
+
+    def is_std(self, el):
+        return el == ">" or el == "<" or el == "<<" or el == ">>"
+
+    def read_stdin(self, stop):
+        cmd = ""
+        tmp = None
+        while tmp != stop:
+            tmp = input("> ")
+            if tmp != stop:
+                cmd = "{}{}".format(cmd, tmp)
+        return cmd
+
+    def read_file(self, path):
+        return self.ftp.read_file(path)
+
+    def write_file(self, path, data):
+        self.ftp.write_file(path, data)
+
+    def concat_file(self, path, data):
+        text = self.read_file(path)
+        self.write_file(path, "{}{}".format(text))
