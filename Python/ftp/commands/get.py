@@ -19,6 +19,6 @@ class get(Command):
                 self.ftp.retrbinary('RETR ' + self.argv[1], open(random_filename, 'wb').write)
                 real_filename = self.argv[1].replace("\\", "/").split("/")[-1]
                 os.rename(random_filename, real_filename)
-            success('Download success !')
+            success('Download success !\n')
         except :
             error('File may not exist or you may not have permission to view it.')

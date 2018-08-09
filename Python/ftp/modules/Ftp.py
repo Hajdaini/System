@@ -2,6 +2,8 @@
 
 import io
 import re
+import os
+from modules.color import *
 from ftplib import FTP
 
 class Ftp(FTP):
@@ -26,9 +28,9 @@ class Ftp(FTP):
         while not os.path.exists(dirname):
             try:
                 os.makedirs(dirname)
-                print("created directory : {0}".format(dirname))
+                cprint("[warning]the directory {0} has been created successfully[/warning]".format(dirname))
             except:
-                create_parent_dir(dirname)
+                cprint("[fail]Failed to create the directory {0}[/fail]".format(dirname))
 
     def download_file(self, name, dest, overwrite):
         self.create_parent_dir(dest.lstrip("/"))
@@ -36,9 +38,9 @@ class Ftp(FTP):
             try:
                 with open(dest, 'wb') as f:
                     self.retrbinary("RETR {0}".format(name), f.write)
-                print("Downloaded: {0}".format(dest))
+                cprint("[warning]the file {0} has been donwloaded successfully[/warning]".format(dest))
             except FileNotFoundError:
-                print("FAILED: {0}".format(dest))
+                cprint("[fail]Failed to download the file {0}[/fail]".format(dest))
         else:
             print("Already exists: {0}".format(dest))
 
