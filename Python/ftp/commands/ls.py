@@ -3,7 +3,7 @@
 from commands.Command import Command
 
 from modules.color import warning, color
-from modules.capture import Capture
+from modules.Capture import Capture
 
 class ls(Command):
     """
