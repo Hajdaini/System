@@ -43,7 +43,7 @@ class Connector:
                 tmp = input("FTP Connection Timeout ({} seconds): ".format(self.timeout))
                 self.timeout = int(tmp) if tmp != "" else self.timeout
             except KeyboardInterrupt:
-                cprint("\n[b]Good Bye {}![/b]".format(user))
+                cprint("\n[b]Good Bye {}![/b]".format(self.user))
                 sys.exit(1)
             state, res = self.connect()
         self.config()
