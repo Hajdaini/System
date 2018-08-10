@@ -6,24 +6,50 @@ import re
 import os
 from modules.color import *
 from ftplib import FTP
+from modules.path import sabspath, abspath
+from modules.Capture import Capture
 
 class Ftp(FTP):
     def __init__(self, host="127.0.0.1", timeout=30):
         FTP.__init__(self, host, timeout=timeout)
 
-    def exists(self, path):
-        return self.is_file(path) or self.is_dir(path)
+    def is_empty(path):
+        path = self.abspath(path)
+        if not self.exists(path) or self.is_file(path):
+            return False
+        with Capture() as output:
+            self.dir(path)
+        return len(output) == 0
 
-    def is_file(self, name):
-        r1 = re.findall(r"type=(file|dir)", self.sendcmd('MLST {}'.format(name)))
-        type = ''.join(r1)
-        return type == "file"
+    def is_dir(path="./"):
+        path = self.abspath(path)
+        if len(path) == 1 and path[0] == "/":
+            return True
+        test = path.split("/")
+        test = test[len(test) - 1]
+        path = abspath(path, "../")
+        ls = self.ls_info(path)
+        return test in ls and ls[test]["type"] == "dir"
 
-    def is_dir(self, name):
-        name = self.abspath(name)
-        r1 = re.findall(r"type=(file|dir)", self.sendcmd('NLST {}'.format(name)))
-        type = ''.join(r1)
-        return type == "dir"
+    def is_file(path):
+        path = self.abspath(path)
+        if len(path) == 1 and path[0] == "/":
+            return False
+        test = path.split("/")
+        test = test[len(test) - 1]
+        path = abspath(path, "../")
+        ls = self.ls_info(path)
+        return test in ls and ls[test]["type"] == "file"
+
+    def exists(path):
+        path = self.abspath(path)
+        if len(path) == 1 and path[0] == "/":
+            return False
+        test = path.split("/")
+        test = test[len(test) - 1]
+        path = abspath(path, "../")
+        ls = self.ls_info(path)
+        return test in ls
 
     def create_parent_dir(self, fpath):
         dirname = os.path.dirname(fpath)
@@ -76,18 +102,29 @@ class Ftp(FTP):
              return 1
 
     def abspath(self, path):
-        if path[0] == "/":
-            return path
-        pwd = self.pwd().split("/")
-        del pwd[0]
-        cpath = path.split("/")
-        for idx, el in enumerate(path.split("/")):
-            if el == ".." or el == ".":
-                del cpath[0]
-                if el == ".." and len(pwd):
-                    pwd.pop()
-            else:
-                break
-        if (len(pwd)):
-            pwd[0] = "/{}".format(pwd[0])
-        return "{}/{}".format("/".join(pwd), "/".join(cpath))
+        return sabspath(self, path)
+
+    def ls_info(path):
+        """
+        Recupere les donnees de chaque entree de la liste
+        """
+        path = self.abspath(path)
+        info = {}
+        with Capture() as output:
+            self.dir(path)
+        if output == "":
+            return {}
+        for line in output:
+            line = line.split()
+            file = line[len(line) - 1]
+            isdir = line[0][0] == "d"
+            line[0] = line[0][1:]
+            info[file] = {
+                "type": "dir" if isdir else "file",
+                "chmod": line[0],
+                "hardlinks" : line[1],
+                "size" : line[4],
+                "modified": " ".join(line[5:-1]),
+                "name": file
+            }
+        return info
