@@ -1,0 +1,143 @@
+#coding:utf-8
+
+from ftplib import FTP
+from modules.Capture import Capture
+import sys
+import os
+
+def cabspath(pwd, path):
+    if path[0] == "/":
+        return path
+    pwd = pwd.split("/")
+    del pwd[0]
+    cpath = path.split("/")
+    for idx, el in enumerate(path.split("/")):
+        if el == ".." or el == ".":
+            del cpath[0]
+            if el == ".." and len(pwd):
+                pwd.pop()
+        else:
+            break
+    if (len(pwd)):
+        pwd[0] = "/{}".format(pwd[0])
+    return "{}/{}".format("/".join(pwd), "/".join(cpath))
+
+def labspath(path):
+    pwd = os.path.dirname(os.path.abspath(__file__))
+    return cabspath(pwd, path)
+
+def sabspath(ftp, path):
+    pwd = ftp.pwd()
+    return cabspath(pwd, path)
+
+def ls_info(ftp, path):
+    path = sabspath(ftp, path)
+    info = {}
+    with Capture() as output:
+        ftp.dir(path)
+    if output == "":
+        return {}
+    for line in output:
+        line = line.split()
+        file = line[len(line) - 1]
+        isdir = line[0][0] == "d"
+        line[0] = line[0][1:]
+        info[file] = {
+            "type": "dir" if isdir else "file",
+            "chmod": line[0],
+            "hardlinks" : line[1],
+            "size" : line[4],
+            "modified": " ".join(line[5:-1]),
+            "name": file
+        }
+    return info
+
+def is_dir(ftp, path="./"):
+    path = sabspath(ftp, path)
+    if len(path) == 1 and path[0] == "/":
+        return True
+    test = path.split("/")
+    test = test[len(test) - 1]
+    path = cabspath(path, "../")
+    ls = ls_info(ftp, path)
+    return ls[test]["type"] == "dir"
+
+def is_file(ftp, path):
+    path = sabspath(ftp, path)
+    if len(path) == 1 and path[0] == "/":
+        return False
+    test = path.split("/")
+    test = test[len(test) - 1]
+    path = cabspath(path, "../")
+    ls = ls_info(ftp, path)
+    return ls[test]["type"] == "file"
+
+def exists(ftp, path):
+    path = sabspath(ftp, path)
+    if len(path) == 1 and path[0] == "/":
+        return False
+    test = path.split("/")
+    test = test[len(test) - 1]
+    path = cabspath(path, "../")
+    ls = ls_info(ftp, path)
+    return ls[test]["type"] == "dir" or ls[test]["type"] == "file"
+
+def cat_file(ftp, srcpath):
+    srcpath = sabspath(ftp, srcpath)
+    ftp.retrlines("RETR " + srcpath, print)
+
+def grab_file(ftp, srcpath, destpath=None):
+    if destpath == None:
+        destpath = srcpath
+    srcpath = sabspath(ftp, srcpath)
+    destpath = labspath(destpath)
+    destfile = open(destpath, "wb")
+    ftp.retrbinary("RETR " + srcpath, destfile.write)
+    destfile.close()
+
+def place_file(ftp, srcpath, destpath=None):
+    if destpath == None:
+        destpath = srcpath
+    srcpath = labspath(srcpath)
+    destpath = sabspath(ftp, destpath)
+    srcfile = open(srcpath, "rb")
+    ftp.storbinary("STOR " + destpath, srcfile)
+    srcfile.close()
+
+ftp = FTP("127.0.0.1")
+ftp.login(user="antrhaxx", passwd="69ers-Prod")
+
+while True:
+    cmd = input("{}$>".format(ftp.pwd()))
+    if cmd == "":
+        continue
+    cmd = cmd.split()
+    if cmd[0] == "pwd":
+        print(ftp.pwd())
+    elif cmd[0] == "cd":
+        try:
+            path = sabspath(ftp, cmd[1])
+            ftp.cwd(path)
+        except:
+            print("Invalid path")
+    elif cmd[0] == "exit":
+        print("Good Bye!")
+        sys.exit(1)
+    elif cmd[0] == "grab":
+        grab_file(ftp, cmd[1])
+    elif cmd[0] == "place":
+        place_file(ftp, cmd[1])
+    elif cmd[0] == "cat":
+        cat_file(ftp, cmd[1])
+    elif cmd[0] == "isdir":
+        print(is_dir(ftp, cmd[1]))
+    elif cmd[0] == "isfile":
+        print(is_file(ftp, cmd[1]))
+    elif cmd[0] == "exists":
+        print(exists(ftp, cmd[1]))
+    elif cmd[0] == "info":
+        ls_info(ftp, cmd[1])
+    elif cmd[0] == "ls":
+        ftp.dir(cmd[1])
+    else:
+        print("Command not found")
