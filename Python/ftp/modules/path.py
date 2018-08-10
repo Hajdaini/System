@@ -28,7 +28,7 @@ def cabspath(path):
     """
     try:
         pwd = os.path.dirname(os.path.abspath(__file__))
-        return cabspath(pwd, path)
+        return abspath(pwd, path)
     except:
         return None
 
@@ -38,6 +38,6 @@ def sabspath(ftp, path):
     """
     try:
         pwd = ftp.pwd()
-        return cabspath(pwd, path)
+        return abspath(pwd, path)
     except:
         return None

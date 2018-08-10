@@ -85,22 +85,6 @@ class Ftp(FTP):
             else:
                 self.download_file(item, item, overwrite)
 
-    def create_file(self, path):
-        try:
-            self.storbinary('STOR {}'.format(path), io.BytesIO(b''))
-            return 0
-        except:
-            return 1
-
-    def create_directory(self, path):
-        try:
-            if path[0] != "/" and path[0] != ".":
-                path = "{}/{}".format(self.pwd(), path)
-            self.mkd(path)
-            return 0
-        except :
-             return 1
-
     def abspath(self, path):
         return sabspath(self, path)
 

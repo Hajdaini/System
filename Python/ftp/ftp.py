@@ -18,7 +18,7 @@ debug = True
 #--------------------------------------
 
 con = Connector()
-con.debug = debug
+con.debug = False
 con.attempt()
 
 #--------------------------------------
