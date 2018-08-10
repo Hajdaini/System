@@ -60,7 +60,7 @@ def is_dir(ftp, path="./"):
     test = test[len(test) - 1]
     path = cabspath(path, "../")
     ls = ls_info(ftp, path)
-    return ls[test]["type"] == "dir"
+    return test in ls and ls[test]["type"] == "dir"
 
 def is_file(ftp, path):
     path = sabspath(ftp, path)
@@ -70,7 +70,7 @@ def is_file(ftp, path):
     test = test[len(test) - 1]
     path = cabspath(path, "../")
     ls = ls_info(ftp, path)
-    return ls[test]["type"] == "file"
+    return test in ls and ls[test]["type"] == "file"
 
 def exists(ftp, path):
     path = sabspath(ftp, path)
@@ -80,7 +80,7 @@ def exists(ftp, path):
     test = test[len(test) - 1]
     path = cabspath(path, "../")
     ls = ls_info(ftp, path)
-    return ls[test]["type"] == "dir" or ls[test]["type"] == "file"
+    return test in ls
 
 def cat_file(ftp, srcpath):
     srcpath = sabspath(ftp, srcpath)
@@ -104,6 +104,26 @@ def place_file(ftp, srcpath, destpath=None):
     ftp.storbinary("STOR " + destpath, srcfile)
     srcfile.close()
 
+def ls_info(ftp, cmd):
+    if len(cmd) == 3 and cmd[1] == "-l" and exists(ftp, cmd[2]):
+        ftp.dir(sabspath(ftp, cmd[2]))
+    elif len(cmd) == 2 and cmd[1] != "-l" and exists(ftp, cmd[1]):
+        print(" ".join(ftp.nlst(sabspath(ftp, cmd[1]))))
+    elif len(cmd) == 2 and cmd[1] == "-l":
+        ftp.dir()
+    elif len(cmd) == 1:
+        print(" ".join(ftp.nlst()))
+    else:
+        print("Invalid path")
+
+def rm_path(ftp, path):
+    if len(cmd) == 3 and (cmd[1] == "-d" or cmd[1] == "-D") and and is_dir(cmd[2]):
+        ftp.rmd(sabspath(cmd[2]))
+    elif len(cmd) == 2 and is_file(cmd[1]):
+        ftp.delete(sabspath(cmd[1]))
+    else:
+        print("File not exists or permission denied")
+
 ftp = FTP("127.0.0.1")
 ftp.login(user="antrhaxx", passwd="69ers-Prod")
 
@@ -115,11 +135,8 @@ while True:
     if cmd[0] == "pwd":
         print(ftp.pwd())
     elif cmd[0] == "cd":
-        try:
-            path = sabspath(ftp, cmd[1])
-            ftp.cwd(path)
-        except:
-            print("Invalid path")
+        if len(cmd) == 2 and is_dir(cmd[1]):
+            ftp.cwd(sabspath(ftp, cmd[1]))
     elif cmd[0] == "exit":
         print("Good Bye!")
         sys.exit(1)
@@ -138,6 +155,11 @@ while True:
     elif cmd[0] == "info":
         ls_info(ftp, cmd[1])
     elif cmd[0] == "ls":
-        ftp.dir(cmd[1])
+        ls_path(ftp, cmd)
+    elif cmd[0] == "rm":
+        rm_path(ftp, cmd)
+    elif cmd[0] == "mkdir":
+        if not exists(cmd[1]):
+            ftp.mkd(sabspath(cmd[1]))
     else:
         print("Command not found")
