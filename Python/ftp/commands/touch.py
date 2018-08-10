@@ -10,6 +10,8 @@ class touch(Command):
 
     def call(self):
         try:
-            self.ftp.storbinary('STOR {}'.format(self.argv[1]), io.BytesIO(b''))
+            for idx, el in enumerate(self.argv):
+                if idx:
+                    self.ftp.storbinary('STOR {}'.format(el), io.BytesIO(b''))
         except:
             error('Directory may not exist or you may not have permission to view it.')

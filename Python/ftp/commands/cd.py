@@ -9,6 +9,9 @@ class cd(Command):
 
     def call(self):
         try:
-            self.ftp.sendcmd('CWD {}'.format(self.argv[1]))
+            if len(self.argv) > 1:
+                self.ftp.sendcmd('CWD {}'.format(self.argv[1]))
+            else:
+                self.ftp.cwd(self.ftp.home)
         except:
             error('Directory may not exist or you may not have permission to view it.')

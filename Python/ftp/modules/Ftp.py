@@ -12,8 +12,9 @@ from modules.Capture import Capture
 class Ftp(FTP):
     def __init__(self, host="127.0.0.1", timeout=30):
         FTP.__init__(self, host, timeout=timeout)
+        self.home = None
 
-    def is_empty(path):
+    def is_empty(self, path):
         path = self.abspath(path)
         if not self.exists(path) or self.is_file(path):
             return False
@@ -21,7 +22,7 @@ class Ftp(FTP):
             self.dir(path)
         return len(output) == 0
 
-    def is_dir(path="./"):
+    def is_dir(self, path="./"):
         path = self.abspath(path)
         if len(path) == 1 and path[0] == "/":
             return True
@@ -31,7 +32,7 @@ class Ftp(FTP):
         ls = self.ls_info(path)
         return test in ls and ls[test]["type"] == "dir"
 
-    def is_file(path):
+    def is_file(self, path):
         path = self.abspath(path)
         if len(path) == 1 and path[0] == "/":
             return False
@@ -41,7 +42,7 @@ class Ftp(FTP):
         ls = self.ls_info(path)
         return test in ls and ls[test]["type"] == "file"
 
-    def exists(path):
+    def exists(self, path):
         path = self.abspath(path)
         if len(path) == 1 and path[0] == "/":
             return False
@@ -86,9 +87,11 @@ class Ftp(FTP):
                 self.download_file(item, item, overwrite)
 
     def abspath(self, path):
+        if path[0] == "~":
+            return sel.home + path[1:]
         return sabspath(self, path)
 
-    def ls_info(path):
+    def ls_info(self, path):
         """
         Recupere les donnees de chaque entree de la liste
         """

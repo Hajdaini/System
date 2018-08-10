@@ -67,6 +67,7 @@ class Connector:
         """
         try:
              self.ftp.encoding = 'utf-8'
+             self.ftp.home = self.ftp.pwd()
              self.ftp.set_debuglevel(2 if self.debug == True else 0)
         except:
             fatal("Cannot go further")

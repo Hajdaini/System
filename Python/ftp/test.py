@@ -154,16 +154,16 @@ def sizeof(ftp, cmd):
     else:
         print("invalid path")
 
-def mv(ftp, from, to):
-    from = sabspath(from)
-    to = sabspath(to)
-    if exists(from) and not exists(to):
-        ftp.rename(from, to)
+def mv(ftp, src, dest):
+    src = sabspath(src)
+    dest = sabspath(dest)
+    if exists(src) and not exists(dest):
+        ftp.rename(src, dest)
 
-def cp(ftp, from, to):
-    from = sabspath(from)
-    to = sabspath(to)
-    if is_file(from) and not exists(to):
+def cp(ftp, src, dest):
+    src = sabspath(src)
+    dest = sabspath(dest)
+    if is_file(src) and not exists(dest):
         pass
 
 while True:
