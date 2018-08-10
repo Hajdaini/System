@@ -5,6 +5,10 @@ from modules.Capture import Capture
 import sys
 import os
 
+ftp = FTP("127.0.0.1")
+ftp.login(user=sys.argv[1], passwd=sys.argv[2])
+home = ftp.pwd()
+
 def cabspath(pwd, path):
     if path[0] == "/":
         return path
@@ -51,6 +55,14 @@ def ls_info(ftp, path):
             "name": file
         }
     return info
+
+def is_empty(ftp, path):
+    path = sabspath(ftp, path)
+    if not exists(ftp, path) or is_file(ftp, path):
+        return False
+    with Capture() as output:
+        ftp.dir(path)
+    return len(output) == 0
 
 def is_dir(ftp, path="./"):
     path = sabspath(ftp, path)
@@ -104,7 +116,7 @@ def place_file(ftp, srcpath, destpath=None):
     ftp.storbinary("STOR " + destpath, srcfile)
     srcfile.close()
 
-def ls_info(ftp, cmd):
+def ls_path(ftp, cmd):
     if len(cmd) == 3 and cmd[1] == "-l" and exists(ftp, cmd[2]):
         ftp.dir(sabspath(ftp, cmd[2]))
     elif len(cmd) == 2 and cmd[1] != "-l" and exists(ftp, cmd[1]):
@@ -117,15 +129,42 @@ def ls_info(ftp, cmd):
         print("Invalid path")
 
 def rm_path(ftp, path):
-    if len(cmd) == 3 and (cmd[1] == "-d" or cmd[1] == "-D") and and is_dir(cmd[2]):
+    if len(cmd) == 3 and (cmd[1] == "-d" or cmd[1] == "-D") and is_dir(cmd[2]):
         ftp.rmd(sabspath(cmd[2]))
     elif len(cmd) == 2 and is_file(cmd[1]):
         ftp.delete(sabspath(cmd[1]))
     else:
         print("File not exists or permission denied")
 
-ftp = FTP("127.0.0.1")
-ftp.login(user="antrhaxx", passwd="69ers-Prod")
+def cd_path(ftp, cmd):
+    if len(cmd) == 2 and is_dir(ftp, cmd[1]):
+        ftp.cwd(sabspath(ftp, cmd[1]))
+    elif len(cmd) == 1:
+        ftp.cwd(home)
+
+def mkdir(ftp, cmd):
+    if not exists(cmd[1]):
+        ftp.mkd(sabspath(cmd[1]))
+    else:
+        print("file alor directory ready exists")
+
+def sizeof(ftp, cmd):
+    if exists(cmd[1]):
+        ftp.size(sabspath(ftp, cmd[1]))
+    else:
+        print("invalid path")
+
+def mv(ftp, from, to):
+    from = sabspath(from)
+    to = sabspath(to)
+    if exists(from) and not exists(to):
+        ftp.rename(from, to)
+
+def cp(ftp, from, to):
+    from = sabspath(from)
+    to = sabspath(to)
+    if is_file(from) and not exists(to):
+        pass
 
 while True:
     cmd = input("{}$>".format(ftp.pwd()))
@@ -135,11 +174,9 @@ while True:
     if cmd[0] == "pwd":
         print(ftp.pwd())
     elif cmd[0] == "cd":
-        if len(cmd) == 2 and is_dir(cmd[1]):
-            ftp.cwd(sabspath(ftp, cmd[1]))
-    elif cmd[0] == "exit":
-        print("Good Bye!")
-        sys.exit(1)
+        cd_path(ftp, cmd)
+    elif cmd[0] == "sizeof":
+        sizeof(ftp, cmd)
     elif cmd[0] == "grab":
         grab_file(ftp, cmd[1])
     elif cmd[0] == "place":
@@ -152,6 +189,8 @@ while True:
         print(is_file(ftp, cmd[1]))
     elif cmd[0] == "exists":
         print(exists(ftp, cmd[1]))
+    elif cmd[0] == "isempty":
+        print(is_empty(ftp, cmd[1]))
     elif cmd[0] == "info":
         ls_info(ftp, cmd[1])
     elif cmd[0] == "ls":
@@ -159,7 +198,11 @@ while True:
     elif cmd[0] == "rm":
         rm_path(ftp, cmd)
     elif cmd[0] == "mkdir":
-        if not exists(cmd[1]):
-            ftp.mkd(sabspath(cmd[1]))
+        mkdir(ftp, cmd)
+    elif cmd[0] == "mv":
+        mv(ftp, cmd[1], cmd[2])
+    elif cmd[0] == "exit":
+        print("Good Bye!")
+        sys.exit(1)
     else:
         print("Command not found")
