@@ -1,8 +1,12 @@
 	#coding:utf-8
 
 from commands.Command import Command
+<<<<<<< HEAD
 from modules.color import error, warning
 from modules.Capture import Capture
+=======
+from modules.color import error
+>>>>>>> 8edbd2129a35cb6f2c7f103807b961697bfb3c24
 
 class cat(Command):
     def __init__(self, args, ftp, address = "127.0.0.1", user = ""):
@@ -24,6 +28,7 @@ class cat(Command):
         counter = 1
         path = self.ftp.abspath(path)
         try:
+<<<<<<< HEAD
             with Capture() as stdout:
                 self.ftp.retrlines("RETR " + path, print(end=""))
         except:
@@ -41,3 +46,9 @@ class cat(Command):
                 counter += 1
             if not "s" in opts or ("s" in opts and el != "" and el != "$"):
                 print(el)
+=======
+            path = self.ftp.abspath(self.argv[1])
+            self.ftp.retrlines("RETR " + path, print(end=""))
+        except:
+            error('Access denied.')
+>>>>>>> 8edbd2129a35cb6f2c7f103807b961697bfb3c24

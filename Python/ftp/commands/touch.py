@@ -14,4 +14,4 @@ class touch(Command):
                 if idx:
                     self.ftp.storbinary('STOR {}'.format(el), io.BytesIO(b''))
         except:
-            error('Directory may not exist or you may not have permission to view it.')
+            error('Access denied.')
