@@ -1,6 +1,6 @@
 #coding:utf-8
 
-import os
+from pathlib import Path
 
 def abspath(pwd, path):
     """
@@ -26,8 +26,10 @@ def cabspath(path):
     """
     Recompose un chemin absolu a partir de la position sur le terminal client
     """
+    if path[0] == "~":
+        return str(Path.home()) + path[1:]
     try:
-        pwd = os.path.dirname(os.path.abspath(__file__))
+        pwd = str(Path.home())
         return abspath(pwd, path)
     except:
         return None
@@ -36,6 +38,8 @@ def sabspath(ftp, path):
     """
     Recompose un chemin absolu a partir de la position sur le yrtminal serveur
     """
+    if path[0] == "~":
+        return ftp.home + path[1:]
     try:
         pwd = ftp.pwd()
         return abspath(pwd, path)

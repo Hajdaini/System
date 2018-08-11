@@ -1,35 +1,47 @@
 #coding:utf-8
 
-import os
+import re
 from commands.Command import Command
-from modules.color import error
-import random, string
-
+from modules.color import error, warning
+from modules.Capture import Capture
 
 class wc(Command):
-    def __init__(self, args, ftp, address, user):
+    def __init__(self, args, ftp, address = "127.0.0.1", user = ""):
         Command.__init__(self, args, ftp, address, user)
 
     def call(self):
+        slen = len(self.argv[1])
+        if slen > 1:
+            opts = self.argv[1]
+            type = opts[1:] if opts[0] == "-" and not self.ftp.is_file(opts) else None
+            for idx, el in enumerate(self.argv):
+                if (type == None and idx) or (type != None and idx >= 2):
+                    self.wc(el, type)
+        else:
+            warning("No file specified")
+
+    def wc(self, path, type=None):
+        output = " "
+        path = self.ftp.abspath(path)
         try:
-            filename = self.argv[1]
-            random_filename = (''.join(random.choice(string.ascii_lowercase) for _ in range(6)))
-            with open(random_filename, 'wb') as file:
-                self.ftp.retrbinary('RETR %s' % filename, file.write)
-
-            with open(random_filename, 'r') as file:
-                num_lines = sum(1 for line in file)
-                print("number of lines :", num_lines)
-
-                file.seek(0, 0)
-                wordcounter = 0
-                for line in file:
-                    wordcounter += len(line.split())
-                print("number of words :", wordcounter)
-
-                file.seek(0, 0)
-                print("number of characters :", len(file.read()))
-
-            os.remove(random_filename)
+            with Capture() as stdout:
+                self.ftp.retrlines("RETR " + path, print(end=""))
         except:
-            error('File may not exist or you may not have permission to access it.')
+            warning("Invalid file given: " + path)
+            return
+        res = " ".join(stdout)
+        if type == None or "l" in type:
+            output = "{} lines:{}".format(output, len(stdout))
+        if type == None or "w" in type:
+            count = len(re.findall(r'\w+', res))
+            if type == None or len(type):
+                output = "{} words:{}".format(output, count)
+            else:
+                output = "{}words:{}".format(output, count)
+        if type == None or "c" in type:
+            if type == None or len(type):
+                output = "{} characters:{}".format(output, len(res))
+            else:
+                output = "{}characters:{}".format(output, len(res))
+        file = path.split("/")
+        print("{} {}".format(output, file[-1]))

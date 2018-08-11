@@ -35,15 +35,13 @@ class rm(Command):
             self.del_file(path)
         else:
             cnt = self.ftp.ls_info(path)
-            if len(cnt) == 0:
-                self.del_dir(path)
-            else:
+            if len(cnt):
                 for key, el in cnt.items():
                     if el["type"] == "file":
                         self.del_file(abspath(path, el["name"]))
                     else:
                         self.del_recursive(abspath(path, el["name"]))
-                        self.del_dir(abspath(path, el["name"]))
+            self.del_dir(path)
 
     def del_file(self, path):
         path = self.ftp.abspath(path)
@@ -51,6 +49,4 @@ class rm(Command):
 
     def del_dir(self, path):
         path = self.ftp.abspath(path)
-        print(path)
-        return
         self.ftp.rmd(path)

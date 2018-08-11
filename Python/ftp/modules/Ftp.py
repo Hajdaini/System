@@ -1,12 +1,10 @@
 #coding:utf-8
 
-import io
-import os
-import re
-import os
+import io, re, os
 from modules.color import *
 from ftplib import FTP
-from modules.path import sabspath, abspath
+from pathlib import Path
+from modules.path import *
 from modules.Capture import Capture
 
 class Ftp(FTP):
@@ -15,6 +13,9 @@ class Ftp(FTP):
         self.home = None
 
     def is_empty(self, path):
+        """
+        Verifie si un dossier distant est vide
+        """
         path = self.abspath(path)
         if not self.exists(path) or self.is_file(path):
             return False
@@ -23,6 +24,9 @@ class Ftp(FTP):
         return len(output) == 0
 
     def is_dir(self, path="./"):
+        """
+        Verifie si le fichier distant est un dossier
+        """
         path = self.abspath(path)
         if len(path) == 1 and path[0] == "/":
             return True
@@ -33,6 +37,9 @@ class Ftp(FTP):
         return test in ls and ls[test]["type"] == "dir"
 
     def is_file(self, path):
+        """
+        Verifie si le fichier distant est un fichier regulier
+        """
         path = self.abspath(path)
         if len(path) == 1 and path[0] == "/":
             return False
@@ -43,6 +50,9 @@ class Ftp(FTP):
         return test in ls and ls[test]["type"] == "file"
 
     def exists(self, path):
+        """
+        Verifieifie si le fichier distant existe
+        """
         path = self.abspath(path)
         if len(path) == 1 and path[0] == "/":
             return False
@@ -52,6 +62,84 @@ class Ftp(FTP):
         ls = self.ls_info(path)
         return test in ls
 
+    def pull(self, srcpath, destpath=None, pverwrite=False):
+        """
+        Telecharge un fichier du serveur
+        """
+        if destpath == None:
+            destpath = srcpath
+        srcpath = self.abspath(srcpath)
+        destpath = cabspath(destpath)
+        if not overwrite and Path(destpath).exists():
+            warning("Local file already exists: " + destpath)
+            return
+        try:
+            destfile = open(destpath, "wb")
+            try:
+                ftp.retrbinary("RETR " + srcpath, destfile.write)
+            except:
+                error("File transfer failed: " + srcpath)
+            destfile.close()
+        except:
+            error("File transfer failed: " + srcpath)
+
+    def push(self, srcpath, destpath=None, overwrite=False):
+        """
+        Envoie un fichier au serveur
+        """
+        if destpath == None:
+            destpath = srcpath
+        srcpath = self.abspath(srcpath)
+        destpath = cabspath(destpath)
+        if not overwrite and self.exists(destpath):
+            warning("Remote file already exists: " + destpath)
+            return
+        try:
+            srcfile = open(srcpath, "rb")
+            try:
+                ftp.storbinary("STOR " + destpath, srcfile)
+            except:
+                error("File transfer failed: " + srcpath)
+            srcfile.close()
+        except:
+            error("File transfer failed: " + srcpath)
+
+    def pullr(self, srcpath, destpath=None, pverwrite=False):
+        """
+        Telecharge une arborescence de fichiers du serveur
+        """
+        if destpath == None:
+            destpath = srcpath
+        srcpath = self.abspath(srcpath)
+        destpath = cabspath(destpath)
+
+    def pushr(self, srcpath, destpath=None, overwrite=False):
+        """
+        Envoie une arborescence de fichiers au serveur
+        """
+        if destpath == None:
+            destpath = srcpath
+        srcpath = self.abspath(srcpath)
+        destpath = cabspath(destpath)
+        if Path(srcpath).is_file():
+            print(srcpath + " | " + destpath)
+            #self.push(srcpath, destpath, overwrite)
+        elif Path(srcpath).is_dir():
+            if not self.exists(destpath):
+                self.mkd(destpath)
+            ls = os.listdir(srcpath)
+            for el in ls:
+                src = abspath(srcpath, el)
+                dest = abspath(destpath, el)
+                if Path(src).is_dir():
+                    if not self.exists(dest):
+                        self.mkd(dest)
+                    print(src + " | " + dest)
+                    self.pushr(src, dest, overwrite)
+                else:
+                    self.pushr(src, dest, overwrite)
+
+    """
     def create_parent_dir(self, fpath):
         dirname = os.path.dirname(fpath)
         while not os.path.exists(dirname):
@@ -85,10 +173,12 @@ class Ftp(FTP):
                 self.mirror_dir(item, overwrite)
             else:
                 self.download_file(item, item, overwrite)
+    """
 
     def abspath(self, path):
-        if path[0] == "~":
-            return sel.home + path[1:]
+        """
+        Determine un chemin absolu a partir d'un chemin quelconque
+        """
         return sabspath(self, path)
 
     def ls_info(self, path):
