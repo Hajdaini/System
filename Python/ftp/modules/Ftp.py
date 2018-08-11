@@ -76,7 +76,7 @@ class Ftp(FTP):
         try:
             destfile = open(destpath, "wb")
             try:
-                ftp.retrbinary("RETR " + srcpath, destfile.write)
+                self.retrbinary("RETR " + srcpath, destfile.write)
             except:
                 error("File transfer failed: " + srcpath)
             destfile.close()
@@ -89,15 +89,15 @@ class Ftp(FTP):
         """
         if destpath == None:
             destpath = srcpath
-        srcpath = self.abspath(srcpath)
-        destpath = cabspath(destpath)
+        srcpath = cabspath(srcpath)
+        destpath = self.abspath(destpath)
         if not overwrite and self.exists(destpath):
             warning("Remote file already exists: " + destpath)
             return
         try:
             srcfile = open(srcpath, "rb")
             try:
-                ftp.storbinary("STOR " + destpath, srcfile)
+                self.storbinary("STOR " + destpath, srcfile)
             except:
                 error("File transfer failed: " + srcpath)
             srcfile.close()
@@ -112,18 +112,8 @@ class Ftp(FTP):
             destpath = srcpath
         srcpath = self.abspath(srcpath)
         destpath = cabspath(destpath)
-
-    def pushr(self, srcpath, destpath=None, overwrite=False):
-        """
-        Envoie une arborescence de fichiers au serveur
-        """
-        if destpath == None:
-            destpath = srcpath
-        srcpath = self.abspath(srcpath)
-        destpath = cabspath(destpath)
         if Path(srcpath).is_file():
-            print(srcpath + " | " + destpath)
-            #self.push(srcpath, destpath, overwrite)
+            self.push(srcpath, destpath, overwrite)
         elif Path(srcpath).is_dir():
             if not self.exists(destpath):
                 self.mkd(destpath)
@@ -134,46 +124,33 @@ class Ftp(FTP):
                 if Path(src).is_dir():
                     if not self.exists(dest):
                         self.mkd(dest)
-                    print(src + " | " + dest)
                     self.pushr(src, dest, overwrite)
                 else:
                     self.pushr(src, dest, overwrite)
 
-    """
-    def create_parent_dir(self, fpath):
-        dirname = os.path.dirname(fpath)
-        while not os.path.exists(dirname):
-            try:
-                os.makedirs(dirname)
-                cprint("[warning]the directory {0} has been created successfully[/warning]".format(dirname))
-            except:
-                cprint("[fail]Failed to create the directory {0}[/fail]".format(dirname))
-
-    def download_file(self, name, dest, overwrite):
-        self.create_parent_dir(dest.lstrip("/"))
-        if not os.path.exists(dest) or overwrite is True:
-            try:
-                with open(dest, 'wb') as f:
-                    self.retrbinary("RETR {0}".format(name), f.write)
-                cprint("[warning]the file {0} has been donwloaded successfully[/warning]".format(dest))
-            except FileNotFoundError:
-                cprint("[fail]Failed to download the file {0}[/fail]".format(dest))
-        else:
-            print("Already exists: {0}".format(dest))
-
-    def download_tree(self, path, overwrite=False):
-        path = path.lstrip("/")
-        original_directory = os.getcwd()
-        self.mirror_dir(path, overwrite)
-        os.chdir(original_directory)
-
-    def mirror_dir(self, name, overwrite):
-        for item in self.nlst(name):
-            if self.is_dir(item): # if it is a directory then we don't care
-                self.mirror_dir(item, overwrite)
-            else:
-                self.download_file(item, item, overwrite)
-    """
+    def pushr(self, srcpath, destpath=None, overwrite=False):
+        """
+        Envoie une arborescence de fichiers au serveur
+        """
+        if destpath == None:
+            destpath = srcpath
+        srcpath = self.abspath(srcpath)
+        destpath = cabspath(destpath)
+        if Path(srcpath).is_file():
+            self.push(srcpath, destpath, overwrite)
+        elif Path(srcpath).is_dir():
+            if not self.exists(destpath):
+                self.mkd(destpath)
+            ls = os.listdir(srcpath)
+            for el in ls:
+                src = abspath(srcpath, el)
+                dest = abspath(destpath, el)
+                if Path(src).is_dir():
+                    if not self.exists(dest):
+                        self.mkd(dest)
+                    self.pushr(src, dest, overwrite)
+                else:
+                    self.pushr(src, dest, overwrite)
 
     def abspath(self, path):
         """

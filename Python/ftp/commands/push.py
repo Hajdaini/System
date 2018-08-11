@@ -7,4 +7,4 @@ class push(Command):
         Command.__init__(self, args, ftp, address, user)
 
     def call(self):
-        self.ftp.pushr(self.argv[1], self.argv[2])
+        self.ftp.pushr(self.argv[1], self.argv[2], True)
