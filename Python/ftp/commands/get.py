@@ -1,6 +1,6 @@
 #coding:utf-8
 
-from commands.Command import Command
+from modules.Command import Command
 from modules.color import error, success, info
 import random, string, os
 

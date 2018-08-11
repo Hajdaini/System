@@ -1,7 +1,7 @@
 #coding:utf-8
 import os
 
-from commands.Command import Command
+from modules.Command import Command
 
 class clear(Command):
     def __init__(self, args, ftp, address = "127.0.0.1", user = ""):

@@ -3,7 +3,7 @@
 import importlib
 import pkgutil
 import commands
-from commands.Command import Command
+from modules.Command import Command
 from modules.color import warning, color
 
 class help(Command):

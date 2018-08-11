@@ -1,6 +1,6 @@
 #coding:utf-8
 
-from commands.Command import Command
+from modules.Command import Command
 
 class echo(Command):
     def __init__(self, args, ftp, address = "127.0.0.1", user = ""):

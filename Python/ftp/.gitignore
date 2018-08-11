@@ -1,5 +1,6 @@
 __pycache__
 commands/__pycache__/
+modules/__pycache__/
 test/*
 test.py
 commands/test.py

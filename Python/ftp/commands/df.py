@@ -1,7 +1,7 @@
 #coding:utf-8
 
 import re
-from commands.Command import Command
+from modules.Command import Command
 from modules.color import *
 
 
