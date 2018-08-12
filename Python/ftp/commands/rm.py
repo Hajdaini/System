@@ -14,7 +14,7 @@ class rm(Command):
             for idx, el in enumerate(self.argv):
                 if idx >= 2:
                     if self.ftp.is_dir(el) and self.ftp.is_empty(el):
-                        del_dir(el)
+                        self.del_dir(el)
                     else:
                         warning(el + " is not a directory or not empty")
         elif len(self.argv) >= 3 and (self.argv[1] == "-r" or self.argv[1] == "-R"):

@@ -4,7 +4,7 @@ import os
 from modules.Command import Command
 
 class clear(Command):
-    def __init__(self,rgs, ftp):
+    def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 
     def call(self):

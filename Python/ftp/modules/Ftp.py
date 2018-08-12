@@ -18,7 +18,7 @@ class Ftp(FTP):
         """
         Verifie si un dossier distant est vide
         """
-        path = self.abspath(path)
+        path = self.sabspath(path)
         if not self.exists(path) or self.is_file(path):
             return False
         with Capture() as output:
@@ -29,7 +29,7 @@ class Ftp(FTP):
         """
         Verifie si le fichier distant est un dossier
         """
-        path = self.abspath(path)
+        path = self.sabspath(path)
         if len(path) == 1 and path[0] == "/":
             return True
         test = path.split("/")
@@ -42,12 +42,12 @@ class Ftp(FTP):
         """
         Verifie si le fichier distant est un fichier regulier
         """
-        path = self.abspath(path)
+        path = self.sabspath(path)
         if len(path) == 1 and path[0] == "/":
             return False
         test = path.split("/")
         test = test[len(test) - 1]
-        path = abspath(path, "../")
+        path = self._abspath(path, "../")
         ls = self.ls_info(path)
         return test in ls and ls[test]["type"] == "file"
 
@@ -55,7 +55,7 @@ class Ftp(FTP):
         """
         Verifieifie si le fichier distant existe
         """
-        path = self.abspath(path)
+        path = self.sabspath(path)
         if len(path) == 1 and path[0] == "/":
             return False
         test = path.split("/")
@@ -70,8 +70,8 @@ class Ftp(FTP):
         """
         if destpath == None:
             destpath = srcpath
-        srcpath = self.abspath(srcpath)
-        destpath = cabspath(destpath)
+        srcpath = self.sabspath(srcpath)
+        destpath = self.cabspath(destpath)
         if not overwrite and Path(destpath).exists():
             warning("Local file already exists: " + destpath)
             return
@@ -91,8 +91,8 @@ class Ftp(FTP):
         """
         if destpath == None:
             destpath = srcpath
-        srcpath = cabspath(srcpath)
-        destpath = self.abspath(destpath)
+        srcpath = self.cabspath(srcpath)
+        destpath = self.sabspath(destpath)
         if not overwrite and self.exists(destpath):
             warning("Remote file already exists: " + destpath)
             return
@@ -112,8 +112,8 @@ class Ftp(FTP):
         """
         if destpath == None:
             destpath = srcpath
-        srcpath = self.abspath(srcpath)
-        destpath = cabspath(destpath)
+        srcpath = self.sabspath(srcpath)
+        destpath = self.cabspath(destpath)
         if Path(srcpath).is_file():
             self.push(srcpath, destpath, overwrite)
         elif Path(srcpath).is_dir():
@@ -136,8 +136,8 @@ class Ftp(FTP):
         """
         if destpath == None:
             destpath = srcpath
-        srcpath = self.abspath(srcpath)
-        destpath = cabspath(destpath)
+        srcpath = self.sabspath(srcpath)
+        destpath = self.cabspath(destpath)
         if Path(srcpath).is_file():
             self.push(srcpath, destpath, overwrite)
         elif Path(srcpath).is_dir():
@@ -182,7 +182,7 @@ class Ftp(FTP):
         """
         Recupere les donnees de chaque entree de la liste
         """
-        path = self.abspath(path)
+        path = self.sabspath(path)
         info = {}
         with Capture() as output:
             self.dir(path)
@@ -203,7 +203,7 @@ class Ftp(FTP):
             }
         return info
 
-    def _abspath(pwd, path):
+    def _abspath(self, pwd, path):
         """
         Recompose un chemin absolu a partir de deux chaines quelconques
         """
