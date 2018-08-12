@@ -7,6 +7,8 @@ class Command:
         self.argc = len(args)
         self.argv = args
         self.ftp = ftp
+        self.address = self.ftp.address
+        self.user = self.ftp.user
 
     def randstr(size=6):
         return (''.join(random.choice(string.ascii_lowercase) for _ in range(size)))
