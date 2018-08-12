@@ -1,5 +1,6 @@
 #coding:utf-8
 from modules.color import error, warning
+from modules.Loader import Loader
 
 class Command:
     def __init__(self, args, ftp):
@@ -8,7 +9,7 @@ class Command:
         self.ftp = ftp
         self.address = self.ftp.address
         self.user = self.ftp.user
-        self.util = []
+        self.util = Loader().load("utils")
 
     def input_error_handle(self, methode1, methode2):
         if self.argc == 1:

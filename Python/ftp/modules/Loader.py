@@ -23,19 +23,17 @@ class Loader:
         return modules
 
     def load(self, component, executable=None):
-        if executable == None:
-            executable = component.split(".")[-1]
         try:
             package = importlib.import_module(component)
         except:
             return None
         if hasattr(package, "__path__"):
-            modules = {}
+            modules = lambda: None
             for importer, modname, ispkg in pkgutil.iter_modules(package.__path__):
-                executable = self.load_module("{}.{}".format(component, modname), modname)
-                if executable == None:
+                exe = self.load_module("{}.{}".format(component, modname), executable)
+                if exe == None:
                     return None
-                modules[modname] = executable
+                setattr(modules, modname, exe)
             return modules
         else:
             return self.load_module(component, executable)
@@ -46,11 +44,8 @@ class Loader:
         except:
             return None
         if component.split(".")[-1][0].islower():
-            if executable != None:
-                try:
-                    return getattr(module, executable)
-                except:
-                    return None
+            if executable is not None:
+                return getattr(module, executable)
             else:
                 return module
         if executable == None:

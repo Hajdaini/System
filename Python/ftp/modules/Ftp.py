@@ -178,7 +178,7 @@ class Ftp(FTP):
         except:
             return None
 
-    def ls_info(self, path):
+    def ls_info(self, path="./"):
         """
         Recupere les donnees de chaque entree de la liste
         """
