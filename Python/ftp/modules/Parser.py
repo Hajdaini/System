@@ -6,10 +6,8 @@ from modules.color import cprint, warning, cinput
 from commands.touch import touch
 
 class Parser:
-    def __init__(self, ftp, address, user):
+    def __init__(self, ftp):
         self.ftp = ftp
-        self.address = address
-        self.user = user
         self.debug = False
 
     def split(self, str):
@@ -24,7 +22,7 @@ class Parser:
         """
         while True:
             try:
-                seq = cinput("[b][green]ftp://{}@{}:[blue]{}[/endc][b]$>[/endc] ".format(self.user, self.address, self.ftp.pwd()))
+                seq = cinput("[b][green]ftp://{}@{}:[blue]{}[/endc][b]$>[/endc] ".format(self.ftp.user, self.ftp.address, self.ftp.pwd()))
             except KeyboardInterrupt:
                 cprint("\n[b]Good Bye {}![/b]".format(user))
                 sys.exit(1)
@@ -136,6 +134,6 @@ class Parser:
         """
         PKG = importlib.import_module("commands.{}".format(cmd[0]))
         cls = getattr(PKG, cmd[0])
-        cls = cls(cmd, self.ftp, self.address, self.user)
+        cls = cls(cmd, self.ftp)
         cls.call()
         self.ftp = cls.ftp

@@ -19,8 +19,8 @@ class ls(Command):
 
     Called with no arguments. It is designed to display a folder's content like a regular ls -l call.
     """
-    def __init__(self, args, ftp, address, user):
-        Command.__init__(self, args, ftp, address, user)
+    def __init__(self, args, ftp):
+        Command.__init__(self, args, ftp)
 
     def call(self):
         if self.argc == 1:

@@ -6,10 +6,9 @@ from modules.color import *
 
 
 class df(Command):
-    def __init__(self, args, ftp, address, user):
-        Command.__init__(self, args, ftp, address, user)
+    def __init__(self, args, ftp):
+        Command.__init__(self, args, ftp)
 
-    
     def byte_convert(self, n):
         symbols = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
         prefix = {}

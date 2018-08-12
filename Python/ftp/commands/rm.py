@@ -6,8 +6,8 @@ from modules.path import abspath
 from modules.color import warning
 
 class rm(Command):
-    def __init__(self, args, ftp, address, user):
-        Command.__init__(self, args, ftp, address, user)
+    def __init__(self, args, ftp):
+        Command.__init__(self, args, ftp)
 
     def call(self):
         if len(self.argv) >= 3 and (self.argv[1] == "-d" or self.argv[1] == "-D"):

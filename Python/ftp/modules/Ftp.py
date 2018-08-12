@@ -7,9 +7,12 @@ from modules.color import *
 from modules.Capture import Capture
 
 class Ftp(FTP):
-    def __init__(self, host="127.0.0.1", timeout=30):
-        FTP.__init__(self, host, timeout=timeout)
+    def __init__(self, address="127.0.0.1", user="anonymous", port=21, timeout=30):
+        FTP.__init__(self, address, timeout=timeout)
         self.home = None
+        self.address = address
+        self.user = user
+        self.port = port
 
     def is_empty(self, path):
         """

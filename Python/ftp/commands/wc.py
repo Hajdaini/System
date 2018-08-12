@@ -6,8 +6,8 @@ from modules.color import error, warning
 from modules.Capture import Capture
 
 class wc(Command):
-    def __init__(self, args, ftp, address = "127.0.0.1", user = ""):
-        Command.__init__(self, args, ftp, address, user)
+    def __init__(self, args, ftp):
+        Command.__init__(self, args, ftp)
 
     def call(self):
         slen = len(self.argv[1])

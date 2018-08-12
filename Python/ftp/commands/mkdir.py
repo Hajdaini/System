@@ -4,8 +4,8 @@ from modules.Command import Command
 from modules.color import error
 
 class mkdir(Command):
-    def __init__(self, args, ftp, address, user):
-        Command.__init__(self, args, ftp, address, user)
+    def __init__(self, args, ftp):
+        Command.__init__(self, args, ftp)
 
     def call(self):
         try:

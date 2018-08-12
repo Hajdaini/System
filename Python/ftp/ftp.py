@@ -26,6 +26,6 @@ con.attempt()
 # Interpreter
 # --------------------------------------
 
-prs = Parser(con.ftp, con.address, con.user)
+prs = Parser(con.ftp)
 prs.debug = debug
 prs.watch()

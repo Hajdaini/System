@@ -22,8 +22,8 @@ class help(Command):
     Called without argument, help gives a list of all available commands
     If a command is specified, help displays the specific command documentation
     """
-    def __init__(self, args, ftp, address, user):
-        Command.__init__(self, args, ftp, address, user)
+    def __init__(self, args, ftp):
+        Command.__init__(self, args, ftp)
 
     def call(self):
         if self.argc == 2:

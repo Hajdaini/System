@@ -5,8 +5,8 @@ from modules.color import error, success, info
 import random, string, os
 
 class get(Command):
-    def __init__(self, args, ftp, address, user):
-        Command.__init__(self, args, ftp, address, user)
+    def __init__(self, args, ftp):
+        Command.__init__(self, args, ftp)
 
     def call(self):
         try:
