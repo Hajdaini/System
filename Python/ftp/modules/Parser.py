@@ -4,6 +4,7 @@ import sys, shlex, importlib
 from modules.Capture import Capture
 from modules.color import cprint, warning, cinput
 from commands.touch import touch
+from modules.Loader import Loader
 
 class Parser:
     def __init__(self, ftp):
@@ -135,5 +136,7 @@ class Parser:
         PKG = importlib.import_module("commands.{}".format(cmd[0]))
         cls = getattr(PKG, cmd[0])
         cls = cls(cmd, self.ftp)
+        cls.util = Loader().load("utils")
+        #return print(cls.util)
         cls.call()
         self.ftp = cls.ftp
