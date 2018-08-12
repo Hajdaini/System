@@ -1,7 +1,6 @@
 #coding:utf-8
 
-import random
-import string
+import random, string
 
 class Command:
     def __init__(self, args, ftp, address = "127.0.0.1", user = ""):

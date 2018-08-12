@@ -1,10 +1,9 @@
 #coding:utf-8
 
 import io, re, os
-from modules.color import *
 from ftplib import FTP
 from pathlib import Path
-from modules.path import *
+from modules.color import *
 from modules.Capture import Capture
 
 class Ftp(FTP):

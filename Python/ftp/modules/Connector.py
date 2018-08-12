@@ -1,7 +1,6 @@
 #coding:utf-8
 
-import sys
-import ftplib
+import sys, ftplib
 from getpass import getpass
 from modules.Ftp import Ftp
 from modules.color import cprint, error, fatal, success

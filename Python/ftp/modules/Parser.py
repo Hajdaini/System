@@ -1,8 +1,6 @@
 #coding:utf-8
 
-import sys
-import shlex
-import importlib
+import sys, shlex, importlib
 from modules.Capture import Capture
 from modules.color import cprint, warning, cinput
 from commands.touch import touch
