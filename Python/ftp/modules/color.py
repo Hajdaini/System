@@ -1,6 +1,8 @@
 #coding: utf-8
 
-def color(str, display = False):
+import sys
+
+def color(str, display=False):
     old = [
         "endc",
         "header",
@@ -43,6 +45,7 @@ def success(str):
 
 def error(str):
     color("[fail][b][ERROR][/endc] [fail]{}[/fail]".format(str), True)
+    sys.exit(1)
 
 def fatal(str):
     color("[fail][b][FATAL ERROR][/endc] [fail]{}[/fail]".format(str), True)

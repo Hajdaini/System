@@ -152,11 +152,29 @@ class Ftp(FTP):
                 else:
                     self.pushr(src, dest, overwrite)
 
-    def abspath(self, path):
+    def cabspath(self, path):
         """
-        Determine un chemin absolu a partir d'un chemin quelconque
+        Recompose un chemin absolu a partir de la position sur le terminal client
         """
-        return sabspath(self, path)
+        if path[0] == "~":
+            return str(Path.home()) + path[1:]
+        try:
+            pwd = str(Path.home())
+            return self._abspath(pwd, path)
+        except:
+            return None
+
+    def sabspath(self, path):
+        """
+        Recompose un chemin absolu a partir de la position sur le yrtminal serveur
+        """
+        if path[0] == "~":
+            return self.home + path[1:]
+        try:
+            pwd = self.pwd()
+            return self._abspath(pwd, path)
+        except:
+            return None
 
     def ls_info(self, path):
         """
@@ -182,3 +200,23 @@ class Ftp(FTP):
                 "name": file
             }
         return info
+
+    def _abspath(pwd, path):
+        """
+        Recompose un chemin absolu a partir de deux chaines quelconques
+        """
+        if path[0] == "/":
+            return path
+        pwd = pwd.split("/")
+        del pwd[0]
+        cpath = path.split("/")
+        for idx, el in enumerate(path.split("/")):
+            if el == ".." or el == ".":
+                del cpath[0]
+                if el == ".." and len(pwd):
+                    pwd.pop()
+            else:
+                break
+        if (len(pwd)):
+            pwd[0] = "/{}".format(pwd[0])
+        return "{}/{}".format("/".join(pwd), "/".join(cpath))

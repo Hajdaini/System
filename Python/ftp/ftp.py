@@ -6,6 +6,7 @@
 
 from modules.Connector import Connector
 from modules.Parser import Parser
+from modules.Config import Config
 
 #--------------------------------------
 # Default dev settings

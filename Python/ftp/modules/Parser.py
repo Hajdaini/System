@@ -104,16 +104,6 @@ class Parser:
             except:
                 warning("Command {} not found. Type help to get available commands".format(cmd[0]))
 
-    def _call(self, cmd):
-        """
-        Appelle une commande sans protection
-        """
-        PKG = importlib.import_module("commands.{}".format(cmd[0]))
-        cls = getattr(PKG, cmd[0])
-        cls = cls(cmd, self.ftp, self.address, self.user)
-        cls.call()
-        self.ftp = cls.ftp
-
     def is_redir(self, el):
         """
         Definit si un element de la sequence de commandes correspond a un lien ()&, |
@@ -141,3 +131,13 @@ class Parser:
     def concat_file(self, path, data):
         text = self.read_file(path)
         self.write_file(path, "{}{}".format(text))
+
+    def _call(self, cmd):
+        """
+        Appelle une commande sans protection
+        """
+        PKG = importlib.import_module("commands.{}".format(cmd[0]))
+        cls = getattr(PKG, cmd[0])
+        cls = cls(cmd, self.ftp, self.address, self.user)
+        cls.call()
+        self.ftp = cls.ftp
