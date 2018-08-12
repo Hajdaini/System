@@ -1,4 +1,5 @@
 #coding:utf-8
+from modules.color import error, warning
 
 class Command:
     def __init__(self, args, ftp):
@@ -28,7 +29,7 @@ class Command:
                 methode2()
                 return False
         elif self.argc > 3:
-            error(self.error_message)
+            error("usage : ~{} [OPTION] <path>".format(self.argv[0]))
             return True
         else:
             return False
