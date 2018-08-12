@@ -1,9 +1,10 @@
-#coding:utf-8
+# coding:utf-8
 
 from modules.Command import Command
 
 from modules.color import warning, color
 from modules.Capture import Capture
+
 
 class ls(Command):
     """
@@ -19,6 +20,7 @@ class ls(Command):
 
     Called with no arguments. It is designed to display a folder's content like a regular ls -l call.
     """
+
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 

@@ -1,10 +1,11 @@
-#coding:utf-8
+# coding:utf-8
 
 from modules.Command import Command
 from modules.color import error
 
+
 class cd(Command):
-    def __init__(self,rgs, ftp):
+    def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 
     def call(self):

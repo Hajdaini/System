@@ -1,7 +1,8 @@
-#coding:utf-8
+# coding:utf-8
 
 from modules.Command import Command
 from modules.color import error
+
 
 class mkdir(Command):
     def __init__(self, args, ftp):
@@ -11,5 +12,5 @@ class mkdir(Command):
         try:
             file = "{}/{}".format(self.ftp.pwd(), self.argv[1])
             self.ftp.mkd(file)
-        except :
+        except:
             error("You may not have permission to create folder")

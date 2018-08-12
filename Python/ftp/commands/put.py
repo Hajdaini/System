@@ -1,7 +1,8 @@
-#coding:utf-8
+# coding:utf-8
 
 from modules.Command import Command
 from modules.color import error
+
 
 class put(Command):
     def __init__(self, args, ftp):
@@ -11,5 +12,5 @@ class put(Command):
         try:
             file = "{}/{}".format(self.ftp.pwd(), self.argv[1])
             self.ftp.storbinary('STR {}'.format(self.argv[1]), open(file, 'rb'))
-        except :
+        except:
             error("You may not have permission to upload")

@@ -1,4 +1,4 @@
-#coding:utf-8
+# coding:utf-8
 
 import re
 from modules.Command import Command
@@ -27,7 +27,6 @@ class df(Command):
         size = self.byte_convert(size)
         return size
 
-
     def call(self):
         try:
             #
@@ -46,5 +45,5 @@ class df(Command):
                         print("{} : {}".format(name, self.byte_convert(self.ftp.size(name))))
             else:
                 error('[Error] : df or df <folder>')
-        except :
+        except:
             warning('File or Folder may not exist or you may not have permission to access it.')
