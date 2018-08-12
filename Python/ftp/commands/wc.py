@@ -1,9 +1,10 @@
-#coding:utf-8
+# coding:utf-8
 
 import re
 from modules.Command import Command
 from modules.color import error, warning
 from modules.Capture import Capture
+
 
 class wc(Command):
     def __init__(self, args, ftp):

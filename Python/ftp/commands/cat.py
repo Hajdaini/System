@@ -1,4 +1,5 @@
 # coding:utf-8
+<<<<<<< HEAD
 
 from modules.Command import Command
 from modules.color import error, warning
@@ -17,10 +18,13 @@ class cat(Command):
             self.ftp.retrlines("RETR " + self.ftp.sabspath(self.argv[1]), print(end=""))
 """
 #coding:utf-8
+=======
+>>>>>>> f6ab0a847f02e47377179464bfc23c9fe44e0c79
 
 from modules.Command import Command
 from modules.color import error, warning
 from modules.Capture import Capture
+
 
 class cat(Command):
     def __init__(self, args, ftp):

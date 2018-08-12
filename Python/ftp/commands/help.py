@@ -1,10 +1,11 @@
-#coding:utf-8
+# coding:utf-8
 
 import importlib
 import pkgutil
 import commands
 from modules.Command import Command
 from modules.color import warning, color
+
 
 class help(Command):
     """
@@ -22,6 +23,7 @@ class help(Command):
     Called without argument, help gives a list of all available commands
     If a command is specified, help displays the specific command documentation
     """
+
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 

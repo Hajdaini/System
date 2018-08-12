@@ -1,8 +1,9 @@
-#coding:utf-8
+# coding:utf-8
 import io
 
 from modules.Command import Command
 from modules.color import error
+
 
 class touch(Command):
     def __init__(self, args, ftp):

@@ -1,6 +1,7 @@
-#coding:utf-8
+# coding:utf-8
 
 from modules.Command import Command
+
 
 class welcome(Command):
     def __init__(self, args, ftp):

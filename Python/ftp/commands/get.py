@@ -1,8 +1,9 @@
-#coding:utf-8
+# coding:utf-8
 
 from modules.Command import Command
 from modules.color import error, success, info
 import random, string, os
+
 
 class get(Command):
     def __init__(self, args, ftp):
@@ -20,5 +21,5 @@ class get(Command):
                 real_filename = self.argv[1].replace("\\", "/").split("/")[-1]
                 os.rename(random_filename, real_filename)
             success('Download success !\n')
-        except :
+        except:
             error('File may not exist or you may not have permission to view it.')
