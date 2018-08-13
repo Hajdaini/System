@@ -118,51 +118,7 @@ class Ftp(FTP):
     # DATA TRANSFERS
     #------------------------------------------------------------
 
-    def pull(self, srcpath="./", destpath=None, overwrite=False):
-        """
-        Telecharge un fichier du serveur
-        """
-        if destpath is None:
-            destpath = srcpath
-        srcpath = self.sabspath(srcpath)
-        destpath = self.cabspath(destpath)
-        if not overwrite and Path(destpath).exists():
-            return warning("Local file already exists: " + destpath)
-        elif self.is_dir(srcpath):
-            return warning("Source file is a directory " + srcpath)
-        try:
-            destfile = open(destpath, "wb")
-            try:
-                self.retrbinary("RETR " + srcpath, destfile.write)
-            except:
-                error("File transfer failed: " + srcpath)
-            destfile.close()
-        except:
-            error("File transfer failed: " + srcpath)
-
-    def push(self, srcpath="./", destpath=None, overwrite=False):
-        """
-        Envoie un fichier au serveur
-        """
-        if destpath == None:
-            destpath = srcpath
-        srcpath = self.cabspath(srcpath)
-        destpath = self.sabspath(destpath)
-        if not overwrite and self.exists(destpath):
-            return warning("Remote file already exists: " + destpath)
-        elif Path(srcpath).is_dir():
-            return warning("Source file is a directory " + srcpath)
-        try:
-            srcfile = open(srcpath, "rb")
-            try:
-                self.storbinary("STOR " + destpath, srcfile)
-            except:
-                error("File transfer failed: " + srcpath)
-            srcfile.close()
-        except:
-            error("File transfer failed: " + srcpath)
-
-    def pullr(self, srcpath="./", destpath=None, overwrite=False, depth=0):
+    def pull(self, srcpath="./", destpath=None, overwrite=False, depth=0):
         """
         Telecharge une arborescence de fichiers du serveur
         """
@@ -175,7 +131,15 @@ class Ftp(FTP):
         elif Path(destpath).exists() and overwrite is False:
             return warning("Local file already exists: " + destpath)
         if self.is_file(srcpath):
-            self.pull(srcpath, destpath, overwrite)
+            try:
+                destfile = open(destpath, "wb")
+                try:
+                    self.retrbinary("RETR " + srcpath, destfile.write)
+                except:
+                    error("File transfer failed: " + srcpath)
+                destfile.close()
+            except:
+                error("File transfer failed: " + srcpath)
         elif self.is_dir(srcpath):
             if not Path(destpath).exists():
                 os.makedirs(destpath)
@@ -187,14 +151,14 @@ class Ftp(FTP):
                 if self.is_dir(src):
                     if not Path(dest).exists():
                         os.makedirs(dest)
-                self.pullr(src, dest, overwrite, depth + 1)
+                self.pull(src, dest, overwrite, depth + 1)
 
-    def pushr(self, srcpath="./", destpath=None, overwrite=False):
+    def push(self, srcpath="./", destpath=None, overwrite=False):
         """
         Envoie une arborescence de fichiers au serveur
         """
         if destpath == None:
-            destpath = srcpath
+            destpath = srcpath.split("/")[-1]
         srcpath = self.sabspath(srcpath)
         destpath = self.cabspath(destpath)
         if not Path(srcpath).exists():
@@ -202,7 +166,15 @@ class Ftp(FTP):
         elif self.exists(destpath) and overwrite is False:
             return warning("Remote file already exists: " + destpath)
         if Path(srcpath).is_file():
-            self.push(srcpath, destpath, overwrite)
+            try:
+                srcfile = open(srcpath, "rb")
+                try:
+                    self.storbinary("STOR " + destpath, srcfile)
+                except:
+                    error("File transfer failed: " + srcpath)
+                srcfile.close()
+            except:
+                error("File transfer failed: " + srcpath)
         elif Path(srcpath).is_dir():
             if not self.exists(destpath):
                 self.mkd(destpath)
@@ -213,7 +185,7 @@ class Ftp(FTP):
                 if Path(src).is_dir():
                     if not self.exists(dest):
                         self.mkd(dest)
-                self.pushr(src, dest, overwrite)
+                self.push(src, dest, overwrite)
 
     #------------------------------------------------------------
     # PATHS DEFINITION
