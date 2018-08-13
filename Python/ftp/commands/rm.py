@@ -2,7 +2,6 @@
 
 from modules.Command import Command
 from modules.color import error
-from modules.path import abspath
 from modules.color import warning
 
 class rm(Command):
@@ -20,11 +19,11 @@ class rm(Command):
         elif len(self.argv) >= 3 and (self.argv[1] == "-r" or self.argv[1] == "-R"):
             for idx, el in enumerate(self.argv):
                 if idx >= 2:
-                    self.del_recursive(self.ftp.abspath(el))
+                    self.del_recursive(self.ftp.sabspath(el))
         else:
             for idx, el in enumerate(self.argv):
                 if idx >= 1:
-                    el = self.ftp.abspath(el)
+                    el = self.ftp.sabspath(el)
                     if self.ftp.is_file(el):
                         self.del_file(el)
                     else:
@@ -38,15 +37,15 @@ class rm(Command):
             if len(cnt):
                 for key, el in cnt.items():
                     if el["type"] == "file":
-                        self.del_file(abspath(path, el["name"]))
+                        self.del_file(self.ftp.abspath(path, el["name"]))
                     else:
-                        self.del_recursive(abspath(path, el["name"]))
+                        self.del_recursive(self.ftp.abspath(path, el["name"]))
             self.del_dir(path)
 
     def del_file(self, path):
-        path = self.ftp.abspath(path)
+        path = self.ftp.sabspath(path)
         self.ftp.delete(path)
 
     def del_dir(self, path):
-        path = self.ftp.abspath(path)
+        path = self.ftp.sabspath(path)
         self.ftp.rmd(path)
