@@ -23,7 +23,7 @@ class df(Command):
         self.output_handle(self.argv[1])
 
     def used_with_options(self):
-        if "l" in self.argv[1] or "L" in self.argv[1]:
+        if "h" in self.argv[1] or "H" in self.argv[1]:
             self.output_handle(self.argv[2], True)
         else:
             warning("invalid options")
