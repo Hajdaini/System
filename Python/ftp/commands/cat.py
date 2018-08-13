@@ -11,7 +11,7 @@ class cat(Command):
         self.error_message = "Usage : cat [OPTION] <filename>"
 
     def call(self):
-        self.input_error_handle(self.without_options_handle, self.with_options_handle)
+        self.input_error_handle(self.without_options_handle, self.with_options_handle, 'file')
 
     def without_options_handle(self):
         path = self.ftp.sabspath(self.argv[1])

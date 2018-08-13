@@ -1,5 +1,5 @@
 # coding:utf-8
-from modules.color import error, warning
+from modules.color import error, warning, fatal
 
 
 class Command:
@@ -11,23 +11,49 @@ class Command:
         self.user = self.ftp.user
         self.util = []
 
-    def input_error_handle(self, methode1, methode2):
+    def input_error_handle(self, funtion_2_args, funtion_3_args, type_to_verify='both', used_alone=False,
+                           used_alone_with_options=False,
+                           function_alone=None, function_with_only_option=None):
         if self.argc == 1:
-            warning("Filename missing")
-            return True
+            if used_alone == False:
+                if type_to_verify == 'both':
+                    warning("Directory or file missing")
+                elif type_to_verify == 'dir':
+                    warning("Directory missing")
+                elif type_to_verify == 'file':
+                    warning("Filename missing")
+                else:
+                    fatal('wrong type x259545')
+                return True
+            else:
+                function_alone()
         elif self.argc == 2:
-            if not self.ftp.is_file(self.argv[1]):
+            if self.argv[1][0] == "-" and used_alone_with_options is True:
+                function_with_only_option()
+            elif type_to_verify == 'both' and not self.ftp.exists(self.argv[1]):
+                warning("Invalid file: " + self.ftp.sabspath(self.argv[1]))
+                return True
+            elif type_to_verify == 'dir' and not self.ftp.is_dir(self.argv[1]):
+                warning("Invalid file: " + self.ftp.sabspath(self.argv[1]))
+                return True
+            elif type_to_verify == 'file' and not self.ftp.is_file(self.argv[1]):
                 warning("Invalid file: " + self.ftp.sabspath(self.argv[1]))
                 return True
             else:
-                methode1()
+                funtion_2_args()
                 return False
         elif self.argc == 3:
-            if not self.ftp.is_file(self.argv[2]):
+            if type_to_verify == 'both' and not self.ftp.exists(self.argv[2]):
+                warning("Invalid file or directory: " + self.ftp.sabspath(self.argv[2]))
+                return True
+            elif type_to_verify == 'dir' and not self.ftp.is_dir(self.argv[2]):
+                warning("Invalid directory: " + self.ftp.sabspath(self.argv[2]))
+                return True
+            elif type_to_verify == 'file' and not self.ftp.is_file(self.argv[2]):
                 warning("Invalid file: " + self.ftp.sabspath(self.argv[2]))
                 return True
             elif self.argv[1][0] == "-":
-                methode2()
+                funtion_3_args()
                 return False
             else:
                 error("usage : {} [OPTION] <path>".format(self.argv[0]))

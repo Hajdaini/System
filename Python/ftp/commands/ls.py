@@ -25,24 +25,22 @@ class ls(Command):
         Command.__init__(self, args, ftp)
 
     def call(self):
-        if self.argc == 1:
-            ls_info_dict = self.ftp.ls_info()
-            self.print_ls_wihout_options(ls_info_dict)
-        elif self.argc == 2 and not self.argv[1][0] == "-":
-            if self.ftp.exists(self.argv[1]):
-                ls_info_dict = self.ftp.ls_info(self.argv[1])
-                self.print_ls_wihout_options(ls_info_dict)
-            else:
-                warning("Invalid path: " + self.argv[1])
-        elif self.argc == 2 and 'l' in self.argv[1] and self.argv[1][0] == "-":
-            self.print_ls_with_options('.')
-        elif self.argc == 3 and 'l' in self.argv[1]:
-            if self.ftp.exists(self.argv[2]):
-                self.print_ls_with_options(self.argv[2])
-            else:
-                warning("Invalid path: " + self.argv[2])
-        else:
-            error("(Usage : ls <path>)")
+        self.input_error_handle(self.used_without_options, self.used_with_options, 'both', True, True, self.used_alone,
+                                self.used_alone_with_options)
+
+    def used_alone(self):
+        ls_info_dict = self.ftp.ls_info()
+        self.print_ls_wihout_options(ls_info_dict)
+
+    def used_without_options(self):
+        ls_info_dict = self.ftp.ls_info(self.argv[1])
+        self.print_ls_wihout_options(ls_info_dict)
+
+    def used_alone_with_options(self):
+        self.print_ls_with_options('.')
+
+    def used_with_options(self):
+        self.print_ls_with_options(self.argv[2])
 
     def print_ls_wihout_options(self, ls_info_dic):
         output = ""
@@ -54,9 +52,12 @@ class ls(Command):
         print(output)
 
     def print_ls_with_options(self, path):
-        with Capture() as output:
-            self.ftp.dir(path)
-        self.colorize(output)
+        if "l" in self.argv[1] or "L" in self.argv[1]:
+            with Capture() as output:
+                self.ftp.dir(path)
+            self.colorize(output)
+        else:
+            warning("invalid options")
 
     def colorize(self, list):
         for el in list:
