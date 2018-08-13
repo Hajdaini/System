@@ -20,7 +20,7 @@ class cat(Command):
     def with_options_handle(self):
         path = self.ftp.sabspath(self.argv[2])
         opts = self.argv[1]
-        self.cat_file(path, opts)
+        self.options_handle(path, opts)
 
     def options_handle(self, path, opts=""):
         counter = 1

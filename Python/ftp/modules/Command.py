@@ -1,6 +1,6 @@
-#coding:utf-8
+# coding:utf-8
 from modules.color import error, warning
-from modules.Loader import Loader
+
 
 class Command:
     def __init__(self, args, ftp):
@@ -9,7 +9,7 @@ class Command:
         self.ftp = ftp
         self.address = self.ftp.address
         self.user = self.ftp.user
-        self.util = Loader().load("utils")
+        self.util = []
 
     def input_error_handle(self, methode1, methode2):
         if self.argc == 1:
@@ -26,12 +26,14 @@ class Command:
             if not self.ftp.is_file(self.argv[2]):
                 warning("Invalid file: " + self.ftp.sabspath(self.argv[2]))
                 return True
-            else:
+            elif self.argv[1][0] == "-":
                 methode2()
                 return False
+            else:
+                error("usage : {} [OPTION] <path>".format(self.argv[0]))
+                return True
         elif self.argc > 3:
-            error("usage : ~{} [OPTION] <path>".format(self.argv[0]))
+            error("usage : {} [OPTION] <path>".format(self.argv[0]))
             return True
         else:
             return False
-
