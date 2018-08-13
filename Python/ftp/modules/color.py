@@ -1,6 +1,7 @@
-#coding: utf-8
+# coding: utf-8
 
 import sys
+
 
 def color(str, display=False):
     old = [
@@ -31,24 +32,31 @@ def color(str, display=False):
     else:
         print(str)
 
+
 def cprint(text):
     color(text, True)
+
 
 def cinput(str):
     return input(color(str))
 
+
 def info(str):
     color("[blue][b][INFO][/endc] [blue]{}[/blue]".format(str), True)
+
 
 def success(str):
     color("[green][b][SUCCESS] [green]{}[/green]".format(str), True)
 
+
 def error(str):
     color("[fail][b][ERROR][/endc] [fail]{}[/fail]".format(str), True)
-    sys.exit(1)
+
 
 def fatal(str):
     color("[fail][b][FATAL ERROR][/endc] [fail]{}[/fail]".format(str), True)
+    sys.exit(1)
+
 
 def warning(str):
     color("[warning][b][WARNING][/endc] [warning]{}[/warning]".format(str), True)
