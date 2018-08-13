@@ -84,8 +84,9 @@ class Ftp(FTP):
         srcpath = self.sabspath(srcpath)
         destpath = self.cabspath(destpath)
         if not overwrite and Path(destpath).exists():
-            warning("Local file already exists: " + destpath)
-            return
+            return warning("Local file already exists: " + destpath)
+        elif self.is_dir(srcpath):
+            return warning("Source file is a directory " + srcpath)
         try:
             destfile = open(destpath, "wb")
             try:
@@ -105,8 +106,9 @@ class Ftp(FTP):
         srcpath = self.cabspath(srcpath)
         destpath = self.sabspath(destpath)
         if not overwrite and self.exists(destpath):
-            warning("Remote file already exists: " + destpath)
-            return
+            return warning("Remote file already exists: " + destpath)
+        elif Path(srcpath).is_dir():
+            return warning("Source file is a directory " + srcpath)
         try:
             srcfile = open(srcpath, "rb")
             try:
