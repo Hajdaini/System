@@ -34,4 +34,3 @@ class Command:
             return True
         else:
             return False
-

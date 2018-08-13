@@ -34,7 +34,7 @@ class Ftp(FTP):
             return True
         test = path.split("/")
         test = test[len(test) - 1]
-        path = abspath(path, "../")
+        path = self.abspath(path, "../")
         ls = self.ls_info(path)
         return test in ls and ls[test]["type"] == "dir"
 
@@ -60,7 +60,7 @@ class Ftp(FTP):
             return False
         test = path.split("/")
         test = test[len(test) - 1]
-        path = abspath(path, "../")
+        path = self._abspath(path, "../")
         ls = self.ls_info(path)
         return test in ls
 
