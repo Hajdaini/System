@@ -64,6 +64,17 @@ class Ftp(FTP):
         ls = self.ls_info(path)
         return test in ls
 
+    def get_tree(self, path="./"):
+        path = self.sabspath(path)
+        tree = []
+        for file in self.nlst():
+            if self.is_file(file):
+                tree.append(self.abspath(path, file))
+            else:
+                branch = self.get_tree(path)
+                tree.append({self.abspath(path, file): branch})
+        return tree
+
     def pull(self, srcpath="./", destpath=None, overwrite=False):
         """
         Telecharge un fichier du serveur
