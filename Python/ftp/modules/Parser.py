@@ -24,7 +24,7 @@ class Parser:
             try:
                 seq = cinput("[b][green]ftp://{}@{}:[blue]{}[/endc][b]$>[/endc] ".format(self.ftp.user, self.ftp.address, self.ftp.pwd()))
             except KeyboardInterrupt:
-                cprint("\n[b]Good Bye {}![/b]".format(user))
+                cprint("\n[b]Good Bye {}![/b]".format(self.ftp.user))
                 sys.exit(1)
             if seq == "":
                 continue

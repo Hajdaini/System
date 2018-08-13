@@ -14,7 +14,7 @@ class Ftp(FTP):
         self.user = user
         self.port = port
 
-    def is_empty(self, pathi="./"):
+    def is_empty(self, path="./"):
         """
         Verifie si un dossier distant est vide
         """
@@ -47,7 +47,7 @@ class Ftp(FTP):
             return False
         test = path.split("/")
         test = test[len(test) - 1]
-        path = self._abspath(path, "../")
+        path = self.abspath(path, "../")
         ls = self.ls_info(path)
         return test in ls and ls[test]["type"] == "file"
 
@@ -60,15 +60,15 @@ class Ftp(FTP):
             return False
         test = path.split("/")
         test = test[len(test) - 1]
-        path = self._abspath(path, "../")
+        path = self.abspath(path, "../")
         ls = self.ls_info(path)
         return test in ls
 
-    def pull(self, srcpath="./", destpath=None, pverwrite=False):
+    def pull(self, srcpath="./", destpath=None, overwrite=False):
         """
         Telecharge un fichier du serveur
         """
-        if destpath == None:
+        if destpath is None:
             destpath = srcpath
         srcpath = self.sabspath(srcpath)
         destpath = self.cabspath(destpath)
@@ -106,7 +106,7 @@ class Ftp(FTP):
         except:
             error("File transfer failed: " + srcpath)
 
-    def pullr(self, srcpath="./", destpath=None, pverwrite=False):
+    def pullr(self, srcpath="./", destpath=None, overwrite=False):
         """
         Telecharge une arborescence de fichiers du serveur
         """
@@ -121,8 +121,8 @@ class Ftp(FTP):
                 self.mkd(destpath)
             ls = os.listdir(srcpath)
             for el in ls:
-                src = abspath(srcpath, el)
-                dest = abspath(destpath, el)
+                src = self.abspath(srcpath, el)
+                dest = self.abspath(destpath, el)
                 if Path(src).is_dir():
                     if not self.exists(dest):
                         self.mkd(dest)
@@ -145,8 +145,8 @@ class Ftp(FTP):
                 self.mkd(destpath)
             ls = os.listdir(srcpath)
             for el in ls:
-                src = abspath(srcpath, el)
-                dest = abspath(destpath, el)
+                src = self.abspath(srcpath, el)
+                dest = self.abspath(destpath, el)
                 if Path(src).is_dir():
                     if not self.exists(dest):
                         self.mkd(dest)
@@ -162,7 +162,7 @@ class Ftp(FTP):
             return str(Path.home()) + path[1:]
         try:
             pwd = str(Path.home())
-            return self._abspath(pwd, path)
+            return self.abspath(pwd, path)
         except:
             return ""
 
@@ -174,9 +174,29 @@ class Ftp(FTP):
             return self.home + path[1:]
         try:
             pwd = self.pwd()
-            return self._abspath(pwd, path)
+            return self.abspath(pwd, path)
         except:
             return ""
+
+    def abspath(self, pwd, path):
+        """
+        Recompose un chemin absolu a partir de deux chaines quelconques
+        """
+        if path[0] == "/":
+            return path
+        pwd = pwd.split("/")
+        del pwd[0]
+        cpath = path.split("/")
+        for idx, el in enumerate(path.split("/")):
+            if el == ".." or el == ".":
+                del cpath[0]
+                if el == ".." and len(pwd):
+                    pwd.pop()
+            else:
+                break
+        if len(pwd):
+            pwd[0] = "/{}".format(pwd[0])
+        return "{}/{}".format("/".join(pwd), "/".join(cpath))
 
     def ls_info(self, path="./"):
         """
@@ -202,23 +222,3 @@ class Ftp(FTP):
                 "name": file
             }
         return info
-
-    def _abspath(self, pwd, path):
-        """
-        Recompose un chemin absolu a partir de deux chaines quelconques
-        """
-        if path[0] == "/":
-            return path
-        pwd = pwd.split("/")
-        del pwd[0]
-        cpath = path.split("/")
-        for idx, el in enumerate(path.split("/")):
-            if el == ".." or el == ".":
-                del cpath[0]
-                if el == ".." and len(pwd):
-                    pwd.pop()
-            else:
-                break
-        if (len(pwd)):
-            pwd[0] = "/{}".format(pwd[0])
-        return "{}/{}".format("/".join(pwd), "/".join(cpath))
