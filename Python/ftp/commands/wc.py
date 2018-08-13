@@ -11,38 +11,26 @@ class wc(Command):
         Command.__init__(self, args, ftp)
 
     def call(self):
-        slen = len(self.argv[1])
-        if slen > 1:
-            opts = self.argv[1]
-            type = opts[1:] if opts[0] == "-" and not self.ftp.is_file(opts) else None
-            for idx, el in enumerate(self.argv):
-                if (type is None and idx) or (type != None and idx >= 2):
-                    self.wc(el, type)
-        else:
-            warning("No file specified")
+        self.input_error_handle(self.without_options_handle, self.with_options_handle, 'file')
 
-    def wc(self, path, type=None):
-        output = " "
-        path = self.ftp.abspath(path)
-        try:
-            with Capture() as stdout:
-                self.ftp.retrlines("RETR " + path, print(end=""))
-        except:
-            warning("Invalid file given: " + path)
-            return
+    def without_options_handle(self):
+        path = self.ftp.sabspath(self.argv[1])
+        self.output_handle(path)
+
+    def with_options_handle(self):
+        path = self.ftp.sabspath(self.argv[2])
+        self.output_handle(path, self.argv[1])
+
+    def output_handle(self, path, options="all"):
+        output = ""
+        with Capture() as stdout:
+            self.ftp.retrlines("RETR " + path, print(end=""))
         res = " ".join(stdout)
-        if type is None or "l" in type:
-            output = "{} lines:{}".format(output, len(stdout))
-        if type is None or "w" in type:
+        if "l" in options or "L" in options or options == "all":
+            output = "{}lines: {}\n".format(output, len(stdout))
+        if "w" in options or "W" in options or options == "all":
             count = len(re.findall(r'\w+', res))
-            if type is None or len(type):
-                output = "{} words:{}".format(output, count)
-            else:
-                output = "{}words:{}".format(output, count)
-        if type is None or "c" in type:
-            if type is None or len(type):
-                output = "{} characters:{}".format(output, len(res))
-            else:
-                output = "{}characters:{}".format(output, len(res))
-        file = path.split("/")
-        print("{} {}".format(output, file[-1]))
+            output = "{}words: {}\n".format(output, count)
+        if "c" in options or "C" in options or options == "all":
+            output = "{}characters: {}".format(output, len(res))
+        print("{} :\n{}".format(path, output))
