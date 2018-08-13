@@ -1,6 +1,6 @@
 # coding:utf-8
 from modules.color import error, warning, fatal
-
+from modules.Loader import Loader
 
 class Command:
     def __init__(self, args, ftp):
@@ -9,7 +9,7 @@ class Command:
         self.ftp = ftp
         self.address = self.ftp.address
         self.user = self.ftp.user
-        self.util = []
+        self.util = Loader().load("utils")
 
     def input_error_handle(self, funtion_2_args, funtion_3_args, type_to_verify='both', used_alone=False,
                            used_alone_with_options=False,
