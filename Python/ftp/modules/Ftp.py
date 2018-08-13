@@ -125,7 +125,6 @@ class Ftp(FTP):
         if destpath is None:
             destpath = srcpath.split("/")[-1]
         srcpath = self.sabspath(srcpath)
-        destpath = self.cabspath(destpath)
         if not self.exists(srcpath):
             return warning("Remote file not exists: " + srcpath)
         elif Path(destpath).exists() and overwrite is False:
@@ -159,15 +158,12 @@ class Ftp(FTP):
         """
         if destpath == None:
             destpath = srcpath.split("/")[-1]
-        srcpath = self.cabspath(srcpath)
         destpath = self.sabspath(destpath)
-        print("{} => {}".format(srcpath, destpath))
         if not Path(srcpath).exists():
             return warning("Local file not exists: " + srcpath)
         elif self.exists(destpath) and overwrite is False:
             return warning("Remote file already exists: " + destpath)
         if Path(srcpath).is_file():
-            print("{} => {}".format(srcpath, destpath))
             try:
                 srcfile = open(srcpath, "rb")
                 try:
