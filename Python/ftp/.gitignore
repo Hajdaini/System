@@ -5,3 +5,4 @@ utils/__pycache__/
 test/*
 test.py
 commands/test.py
+.idea/*
