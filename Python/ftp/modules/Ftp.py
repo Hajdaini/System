@@ -1,10 +1,11 @@
-#coding:utf-8
+# coding:utf-8
 
 import io, re, os
 from ftplib import FTP
 from pathlib import Path
 from modules.color import *
 from modules.Capture import Capture
+
 
 # Table of contents
 #   - FILESYSTEM TESTS
@@ -20,9 +21,9 @@ class Ftp(FTP):
         self.user = user
         self.port = port
 
-    #------------------------------------------------------------
+    # ------------------------------------------------------------
     # FILESYSTEM TESTS
-    #------------------------------------------------------------
+    # ------------------------------------------------------------
 
     def is_empty(self, path="./"):
         """
@@ -74,9 +75,9 @@ class Ftp(FTP):
         ls = self.ls_info(path)
         return test in ls
 
-    #------------------------------------------------------------
+    # ------------------------------------------------------------
     # FILESYSTEM INSPECTION
-    #------------------------------------------------------------
+    # ------------------------------------------------------------
 
     def get_tree(self, path="./"):
         path = self.sabspath(path)
@@ -107,21 +108,22 @@ class Ftp(FTP):
             info[file] = {
                 "type": "dir" if isdir else "file",
                 "chmod": line[0],
-                "hardlinks" : line[1],
-                "size" : line[4],
+                "hardlinks": line[1],
+                "size": line[4],
                 "modified": " ".join(line[5:-1]),
                 "name": file
             }
         return info
 
-    #------------------------------------------------------------
+    # ------------------------------------------------------------
     # DATA TRANSFERS
-    #------------------------------------------------------------
+    # ------------------------------------------------------------
 
     def pull(self, srcpath="./", destpath=None, overwrite=False, depth=0):
         """
         Telecharge une arborescence de fichiers du serveur
         """
+        destpath = destpath.replace('\\', '/')
         if destpath is None:
             destpath = srcpath.split("/")[-1]
         srcpath = self.sabspath(srcpath)
@@ -156,6 +158,7 @@ class Ftp(FTP):
         """
         Envoie une arborescence de fichiers au serveur
         """
+        srcpath = srcpath.replace('\\', '/')
         if destpath == None:
             destpath = srcpath.split("/")[-1]
         destpath = self.sabspath(destpath)
@@ -185,9 +188,9 @@ class Ftp(FTP):
                         self.mkd(dest)
                 self.push(src, dest, overwrite)
 
-    #------------------------------------------------------------
+    # ------------------------------------------------------------
     # PATHS DEFINITION
-    #------------------------------------------------------------
+    # ------------------------------------------------------------
 
     def cabspath(self, path="./"):
         """
