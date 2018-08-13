@@ -9,8 +9,4 @@ class put(Command):
         Command.__init__(self, args, ftp)
 
     def call(self):
-        try:
-            file = "{}/{}".format(self.ftp.pwd(), self.argv[1])
-            self.ftp.storbinary('STR {}'.format(self.argv[1]), open(file, 'rb'))
-        except:
-            error("You may not have permission to upload")
+        self.ftp.push(self.argv[1])
