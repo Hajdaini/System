@@ -14,7 +14,7 @@ class Ftp(FTP):
         self.user = user
         self.port = port
 
-    def is_empty(self, path="./"):
+    def is_empty(self, path):
         """
         Verifie si un dossier distant est vide
         """
@@ -38,7 +38,7 @@ class Ftp(FTP):
         ls = self.ls_info(path)
         return test in ls and ls[test]["type"] == "dir"
 
-    def is_file(self, path="./"):
+    def is_file(self, path):
         """
         Verifie si le fichier distant est un fichier regulier
         """
@@ -51,7 +51,7 @@ class Ftp(FTP):
         ls = self.ls_info(path)
         return test in ls and ls[test]["type"] == "file"
 
-    def exists(self, path="./"):
+    def exists(self, path):
         """
         Verifieifie si le fichier distant existe
         """
@@ -64,7 +64,7 @@ class Ftp(FTP):
         ls = self.ls_info(path)
         return test in ls
 
-    def pull(self, srcpath="./", destpath=None, pverwrite=False):
+    def pull(self, srcpath, destpath=None, pverwrite=False):
         """
         Telecharge un fichier du serveur
         """
@@ -85,7 +85,7 @@ class Ftp(FTP):
         except:
             error("File transfer failed: " + srcpath)
 
-    def push(self, srcpath="./", destpath=None, overwrite=False):
+    def push(self, srcpath, destpath=None, overwrite=False):
         """
         Envoie un fichier au serveur
         """
@@ -106,7 +106,7 @@ class Ftp(FTP):
         except:
             error("File transfer failed: " + srcpath)
 
-    def pullr(self, srcpath="./", destpath=None, pverwrite=False):
+    def pullr(self, srcpath, destpath=None, pverwrite=False):
         """
         Telecharge une arborescence de fichiers du serveur
         """
@@ -130,7 +130,7 @@ class Ftp(FTP):
                 else:
                     self.pushr(src, dest, overwrite)
 
-    def pushr(self, srcpath="./", destpath=None, overwrite=False):
+    def pushr(self, srcpath, destpath=None, overwrite=False):
         """
         Envoie une arborescence de fichiers au serveur
         """
@@ -154,7 +154,7 @@ class Ftp(FTP):
                 else:
                     self.pushr(src, dest, overwrite)
 
-    def cabspath(self, path="./"):
+    def cabspath(self, path):
         """
         Recompose un chemin absolu a partir de la position sur le terminal client
         """
@@ -166,7 +166,7 @@ class Ftp(FTP):
         except:
             return None
 
-    def sabspath(self, path="./"):
+    def sabspath(self, path):
         """
         Recompose un chemin absolu a partir de la position sur le yrtminal serveur
         """
@@ -178,7 +178,7 @@ class Ftp(FTP):
         except:
             return None
 
-    def ls_info(self, path="./"):
+    def ls_info(self, path):
         """
         Recupere les donnees de chaque entree de la liste
         """
