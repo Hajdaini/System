@@ -33,7 +33,7 @@ class Loader:
                 exe = self.load_module("{}.{}".format(component, modname), executable)
                 if exe == None:
                     return None
-                setattr(modules, modname, exe)
+                setattr(modules, modname.lower(), exe)
             return modules
         else:
             return self.load_module(component, executable)
@@ -51,7 +51,7 @@ class Loader:
         if executable == None:
             executable = component.split(".")[-1]
         try:
-            executable = getattr(component, executable)
+            executable = getattr(module, executable)
         except:
             return None
         return executable() if inspect.isclass(executable) else executable
