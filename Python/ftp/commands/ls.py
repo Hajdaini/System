@@ -51,17 +51,37 @@ class ls(Command):
         print(output)
 
     def print_ls_with_options(self, path):
+        with Capture() as nlst:
+            if "a" in self.argv[1] or "A" in self.argv[1]:
+                self.ftp.retrlines("NLST -a " + path)
+            else:
+                self.ftp.retrlines("NLST " + path)
         if "l" in self.argv[1] or "L" in self.argv[1]:
             with Capture() as output:
-                self.ftp.dir(path)
-            self.colorize(output, self.ftp.nlst(path))
+                if "a" in self.argv[1] or "A" in self.argv[1]:
+                    self.ftp.retrlines("LIST -a {}".format(path))
+                else:
+                    self.ftp.retrlines("LIST {}".format(path))
+            self.colorize(output, nlst)
+        elif "a" in self.argv[1] or "A" in self.argv[1]:
+            with Capture() as output:
+                self.ftp.retrlines("LIST -a {}".format(path))
+            for idx, el in enumerate(output):
+                file = nlst[idx]
+                output[idx] = "[b][blue]{}[/endc]/".format(file) if el[0] == "d" else file
+            cprint("    ".join(output))
         else:
             warning("invalid options")
 
     def colorize(self, list, nlst):
         for idx, el in enumerate(list):
-            file = nlst[idx].split("/")[-1]
+            file = nlst[idx]
             line = el[0:(len(file) * -1)]
-            if line[0] == "d":
+            if file[0] == ".":
+                if line[0] == "d":
+                    file = "[b][blue]{}[/endc]/".format(file)
+                else:
+                    file = "[b][header]{}[/endc]".format(file)
+            elif line[0] == "d":
                 file = "[b][blue]{}[/endc]/".format(file)
             cprint("{}{}".format(line, file))
