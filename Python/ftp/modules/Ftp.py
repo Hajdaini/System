@@ -69,8 +69,7 @@ class Ftp(FTP):
         path = self.sabspath(path)
         if len(path) == 1 and path[0] == "/":
             return False
-        test = path.split("/")
-        test = test[len(test) - 1]
+        test = path.split("/")[-1]
         path = self.abspath(path, "../")
         ls = self.ls_info(path)
         return test in ls
@@ -95,14 +94,15 @@ class Ftp(FTP):
         Recupere les donnees de chaque entree de la liste
         """
         path = self.sabspath(path)
+        lst = self.nlst(path)
         info = {}
         with Capture() as output:
             self.dir(path)
         if output == "":
             return {}
-        for line in output:
-            line = line.split()
-            file = line[len(line) - 1]
+        for idx, line in enumerate(output):
+            file = lst[idx].split("/")[-1]
+            line = line[0:(len(file) * -1)].split()
             isdir = line[0][0] == "d"
             line[0] = line[0][1:]
             info[file] = {
@@ -110,7 +110,7 @@ class Ftp(FTP):
                 "chmod": line[0],
                 "hardlinks": line[1],
                 "size": line[4],
-                "modified": " ".join(line[5:-1]),
+                "modified": " ".join(line[5:]),
                 "name": file
             }
         return info
@@ -123,13 +123,14 @@ class Ftp(FTP):
         """
         Telecharge une arborescence de fichiers du serveur
         """
-        destpath = destpath.replace('\\', '/')
+        if srcpath[-1] == "/":
+            srcpath = srcpath[0:-1]
         if destpath is None:
             destpath = srcpath.split("/")[-1]
         srcpath = self.sabspath(srcpath)
         if not self.exists(srcpath):
             return warning("Remote file not exists: " + srcpath)
-        elif Path(destpath).exists() and overwrite is False:
+        elif Path(destpath).is_file() and overwrite is False:
             return warning("Local file already exists: " + destpath)
         if self.is_file(srcpath):
             try:
@@ -143,49 +144,50 @@ class Ftp(FTP):
                 error("File transfer failed: " + srcpath)
         elif self.is_dir(srcpath):
             if not Path(destpath).exists():
-                os.makedirs(destpath)
+                try:
+                    os.makedirs(destpath)
+                except:
+                    return warning("Failed to create local directory: " + destpath)
             ls = self.nlst(srcpath)
             for el in ls:
                 el = el.split("/")[-1]
                 src = self.abspath(srcpath, el)
                 dest = self.abspath(destpath, el)
-                if self.is_dir(src):
-                    if not Path(dest).exists():
-                        os.makedirs(dest)
-                self.pull(src, dest, overwrite, depth + 1)
+                self.pull(src, dest, overwrite)
 
     def push(self, srcpath="./", destpath=None, overwrite=False):
         """
         Envoie une arborescence de fichiers au serveur
         """
-        srcpath = srcpath.replace('\\', '/')
-        if destpath == None:
+        if srcpath[-1] == "/":
+            srcpath = srcpath[0:-1]
+        if destpath is None:
             destpath = srcpath.split("/")[-1]
         destpath = self.sabspath(destpath)
         if not Path(srcpath).exists():
             return warning("Local file not exists: " + srcpath)
-        elif self.exists(destpath) and overwrite is False:
+        elif self.is_file(destpath) and overwrite is False:
             return warning("Remote file already exists: " + destpath)
         if Path(srcpath).is_file():
             try:
-                srcfile = open(srcpath, "rb")
+                file = open(srcpath, "rb")
                 try:
-                    self.storbinary("STOR " + destpath, srcfile)
+                    self.storbinary("STOR /" + destpath, file)
                 except:
-                    error("File transfer failed: " + srcpath)
-                srcfile.close()
+                    return warning("Transfer failed: " + srcpath)
+                file.close()
             except:
-                error("File transfer failed: " + srcpath)
+                return warning("Could not acceess local file: " + srcpath)
         elif Path(srcpath).is_dir():
             if not self.exists(destpath):
-                self.mkd(destpath)
+                try:
+                    self.mkd(destpath)
+                except:
+                    return warning("Failed to create remote directory: " + destpath)
             ls = os.listdir(srcpath)
             for el in ls:
                 src = self.abspath(srcpath, el)
                 dest = self.abspath(destpath, el)
-                if Path(src).is_dir():
-                    if not self.exists(dest):
-                        self.mkd(dest)
                 self.push(src, dest, overwrite)
 
     # ------------------------------------------------------------
@@ -220,10 +222,10 @@ class Ftp(FTP):
         """
         Recompose un chemin absolu a partir de deux chaines quelconques
         """
+        isroot = True if pwd[0] == "/" else False
         if path[0] == "/":
             return path
-        pwd = pwd.split("/")
-        del pwd[0]
+        pwd = self._trim(pwd.split("/"))
         cpath = path.split("/")
         for idx, el in enumerate(path.split("/")):
             if el == ".." or el == ".":
@@ -232,6 +234,20 @@ class Ftp(FTP):
                     pwd.pop()
             else:
                 break
-        if len(pwd):
-            pwd[0] = "/{}".format(pwd[0])
-        return "{}/{}".format("/".join(pwd), "/".join(cpath))
+        path = "{}/{}".format("/".join(pwd), "/".join(cpath))
+        return "/" + path if isroot else path
+
+    def _trim(self, lst):
+        for idx, el in enumerate(lst):
+            if el == "":
+                del lst[0]
+            if lst[-1] == "":
+                del lst[-1]
+        return lst
+
+    def _escape(self, path):
+        path = path.split("/")
+        for idx, el in enumerate(path):
+            if " " in el:
+                path[idx] = "'{}'".format(el)
+        return "/".join(path)

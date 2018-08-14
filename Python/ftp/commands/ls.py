@@ -1,7 +1,6 @@
 # coding:utf-8
 
 from modules.Command import Command
-
 from modules.color import warning, color, cprint, error
 from modules.Capture import Capture
 
@@ -55,13 +54,14 @@ class ls(Command):
         if "l" in self.argv[1] or "L" in self.argv[1]:
             with Capture() as output:
                 self.ftp.dir(path)
-            self.colorize(output)
+            self.colorize(output, self.ftp.nlst(path))
         else:
             warning("invalid options")
 
-    def colorize(self, list):
-        for el in list:
-            spl = el.split()
-            if spl[0][0] == "d":
-                spl[len(spl) - 1] = "[b][blue]{}[/endc]/".format(spl[len(spl) - 1])
-            color(" ".join(spl), True)
+    def colorize(self, list, nlst):
+        for idx, el in enumerate(list):
+            file = nlst[idx].split("/")[-1]
+            line = el[0:(len(file) * -1)]
+            if line[0] == "d":
+                file = "[b][blue]{}[/endc]/".format(file)
+            cprint("{}{}".format(line, file))
