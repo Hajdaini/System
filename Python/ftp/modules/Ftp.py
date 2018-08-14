@@ -214,6 +214,7 @@ class Ftp(FTP):
         """
         Recompose un chemin absolu a partir de la position sur le terminal client
         """
+        path = path.replace("\\", "/")
         try:
             pwd = self.chome
             return self.abspath(pwd, path)
@@ -224,6 +225,7 @@ class Ftp(FTP):
         """
         Recompose un chemin absolu a partir de la position sur le yrtminal serveur
         """
+        path = path.replace("\\", "/")
         if path[0] == "~":
             return self.home + path[1:]
         try:
