@@ -23,7 +23,7 @@ con = Connector()
 con.debug = False
 con.attempt()
 
-con.ftp.chome = os.path.dirname(os.path.abspath(__file__))
+con.ftp.chome = os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")
 con.ftp.debug = debug
 
 #--------------------------------------

@@ -121,7 +121,7 @@ class Ftp(FTP):
     # DATA TRANSFERS
     # ------------------------------------------------------------
 
-    def pull(self, srcpath="./", destpath="./", overwrite=False, depth=0):
+    def pull(self, srcpath, destpath="./", overwrite=False, depth=0):
         """
         Telecharge une arborescence de fichiers du serveur
         """
@@ -158,7 +158,7 @@ class Ftp(FTP):
                 dest = self.abspath(destpath, el)
                 self.pull(src, dest, overwrite)
 
-    def push(self, srcpath="./", destpath="./", overwrite=False):
+    def push(self, srcpath, destpath="./", overwrite=False):
         """
         Envoie une arborescence de fichiers au serveur
         """
@@ -228,6 +228,8 @@ class Ftp(FTP):
         Recompose un chemin absolu a partir de la position sur le yrtminal serveur
         """
         path = path.replace("\\", "/")
+        if path[0] == "/" or path.startswith(self.chome):
+            return path
         if path[0] == "~":
             return self.home + path[1:]
         try:
@@ -241,7 +243,7 @@ class Ftp(FTP):
         Recompose un chemin absolu a partir de deux chaines quelconques
         """
         isroot = True if pwd[0] == "/" else False
-        if path[0] == "/":
+        if path[0] == "/" or path.startswith(self.chome):
             return path
         pwd = self._trim(pwd.split("/"))
         cpath = path.split("/")
@@ -254,6 +256,10 @@ class Ftp(FTP):
                 break
         path = "{}/{}".format("/".join(pwd), "/".join(cpath))
         return "/" + path if isroot else path
+
+    # ------------------------------------------------------------
+    # UTILITIES
+    # ------------------------------------------------------------
 
     def _trim(self, lst):
         for idx, el in enumerate(lst):
