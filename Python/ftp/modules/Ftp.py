@@ -166,6 +166,8 @@ class Ftp(FTP):
             srcpath = srcpath[0:-1]
         srcpath = self.cabspath(srcpath)
         destpath = self.sabspath(destpath)
+        print("Local: {}\nRemote: {}".format(srcpath, destpath))
+        return
         self.create_tree(destpath)
         destpath = self.abspath(destpath, srcpath.split("/")[-1])
         if not Path(srcpath).exists():
