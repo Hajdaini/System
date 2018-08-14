@@ -17,6 +17,8 @@ class Ftp(FTP):
     def __init__(self, address="127.0.0.1", user="anonymous", port=21, timeout=30):
         FTP.__init__(self, address, timeout=timeout)
         self.home = None
+        self.chome = None
+        self.debug = False
         self.address = address
         self.user = user
         self.port = port
@@ -119,15 +121,16 @@ class Ftp(FTP):
     # DATA TRANSFERS
     # ------------------------------------------------------------
 
-    def pull(self, srcpath="./", destpath=None, overwrite=False, depth=0):
+    def pull(self, srcpath="./", destpath="./", overwrite=False, depth=0):
         """
         Telecharge une arborescence de fichiers du serveur
         """
         if srcpath[-1] == "/":
             srcpath = srcpath[0:-1]
-        if destpath is None:
-            destpath = srcpath.split("/")[-1]
         srcpath = self.sabspath(srcpath)
+        destpath = self.cabspath(destpath)
+        self.create_tree(destpath, True)
+        destpath = self.abspath(destpath, srcpath.split("/")[-1])
         if not self.exists(srcpath):
             return warning("Remote file not exists: " + srcpath)
         elif Path(destpath).is_file() and overwrite is False:
@@ -155,15 +158,16 @@ class Ftp(FTP):
                 dest = self.abspath(destpath, el)
                 self.pull(src, dest, overwrite)
 
-    def push(self, srcpath="./", destpath=None, overwrite=False):
+    def push(self, srcpath="./", destpath="./", overwrite=False):
         """
         Envoie une arborescence de fichiers au serveur
         """
         if srcpath[-1] == "/":
             srcpath = srcpath[0:-1]
-        if destpath is None:
-            destpath = srcpath.split("/")[-1]
+        srcpath = self.cabspath(srcpath)
         destpath = self.sabspath(destpath)
+        self.create_tree(destpath)
+        destpath = self.abspath(destpath, srcpath.split("/")[-1])
         if not Path(srcpath).exists():
             return warning("Local file not exists: " + srcpath)
         elif self.is_file(destpath) and overwrite is False:
@@ -190,6 +194,18 @@ class Ftp(FTP):
                 dest = self.abspath(destpath, el)
                 self.push(src, dest, overwrite)
 
+    def create_tree(self, path="./", local=False):
+        if local:
+            path = self.cabspath(path)
+            if not Path(path).exists():
+                os.makedirs(path)
+        else:
+            path = self.sabspath(path)
+            parent = "/".join(path.split("/")[0:-1])
+            if not self.exists(parent):
+                self.create_tree(parent)
+            self.mkd(path)
+
     # ------------------------------------------------------------
     # PATHS DEFINITION
     # ------------------------------------------------------------
@@ -198,10 +214,8 @@ class Ftp(FTP):
         """
         Recompose un chemin absolu a partir de la position sur le terminal client
         """
-        if path[0] == "~":
-            return str(Path.home()) + path[1:]
         try:
-            pwd = str(Path.home())
+            pwd = self.chome
             return self.abspath(pwd, path)
         except:
             return ""
