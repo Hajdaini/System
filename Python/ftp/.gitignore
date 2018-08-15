@@ -1,5 +1,11 @@
 __pycache__
 commands/__pycache__/
-test/*
+modules/__pycache__/
+utils/__pycache__/
+venv/
+.idea/
+test/
+lire-ecrire-editer/
 test.py
 commands/test.py
+.idea/*

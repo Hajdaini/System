@@ -1,7 +1,6 @@
 #coding:utf-8
 
-import sys
-import ftplib
+import sys, ftplib
 from getpass import getpass
 from modules.Ftp import Ftp
 from modules.color import cprint, error, fatal, success
@@ -54,7 +53,7 @@ class Connector:
         Tente de se connecter
         """
         try:
-            self.ftp = Ftp(self.address, self.timeout)
+            self.ftp = Ftp(self.address, self.user, self.port, self.timeout)
             self.ftp.connect(self.address, self.port)
             self.ftp.login(self.user, self.password)
             return ("connected", self.ftp)

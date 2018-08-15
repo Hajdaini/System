@@ -1,10 +1,11 @@
-#coding:utf-8
+# coding:utf-8
 
-from commands.Command import Command
+from modules.Command import Command
+
 
 class pwd(Command):
-    def __init__(self, args, ftp, address = "127.0.0.1", user = ""):
-        Command.__init__(self, args, ftp, address, user)
+    def __init__(self, args, ftp):
+        Command.__init__(self, args, ftp)
 
     def call(self):
         print(self.ftp.pwd())

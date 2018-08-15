@@ -1,15 +1,75 @@
-#coding:utf-8
+# coding:utf-8
 
 import re
-from commands.Command import Command
+from modules.Command import Command
 from modules.color import *
 
 
 class df(Command):
-    def __init__(self, args, ftp, address, user):
-        Command.__init__(self, args, ftp, address, user)
+    def __init__(self, args, ftp):
+        Command.__init__(self, args, ftp)
+        self.total_size = []
 
-    
+    def used_alone(self):
+        self.output_handle('.')
+
+    def used_alone_with_options(self):
+        if "h" in self.argv[1] or "H" in self.argv[1]:
+            self.output_handle('.', True)
+        else:
+            warning("invalid options")
+
+    def used_without_options(self):
+        self.output_handle(self.argv[1])
+
+    def used_with_options(self):
+        if "h" in self.argv[1] or "H" in self.argv[1]:
+            self.output_handle(self.argv[2], True)
+        else:
+            warning("invalid options")
+
+    def call(self):
+        self.input_error_handle(self.used_without_options, self.used_with_options, 'both', True, True, self.used_alone,
+                                self.used_alone_with_options)
+
+    def output_handle(self, path_to_verify, human_size=False):
+        path_to_verify = self.ftp.sabspath(path_to_verify)
+        for path in self.ftp.nlst(path_to_verify):
+            if self.ftp.is_dir(path):
+                self.print_directory_size(path, human_size)
+            else:
+                if human_size is True:
+                    print("{} : {}".format(path, self.byte_convert(self.ftp.size(path))))
+                else:
+                    size = self.ftp.size(path)
+                    self.total_size.append(size)
+                    print("{} : {}".format(path, size))
+        self.print_total_size(human_size)
+
+    def print_total_size(self, human_size):
+        total = sum(self.total_size)
+        if human_size is True:
+            cprint("[green]Total : {}[/green]\n".format(self.byte_convert(total)))
+        else:
+            cprint("[green]Total : {}[/green]\n".format(total))
+        self.total_size = []
+
+    def print_directory_size(self, directory, human_size=False):
+        for path in self.ftp.nlst(directory):
+            try:
+                abs_path = self.ftp.sabspath(path)
+                if self.ftp.is_dir(abs_path):
+                    self.print_directory_size(abs_path, human_size)
+                else:
+                    size = self.ftp.size(abs_path)
+                    self.total_size.append(size)
+                    if human_size:
+                        print("{} : {}".format(path, self.byte_convert(size)))
+                    else:
+                        print("{} : {}".format(path, size))
+            except:
+                warning("You dont have permission for: {}".format(abs_path))
+
     def byte_convert(self, n):
         symbols = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
         prefix = {}
@@ -20,32 +80,3 @@ class df(Command):
                 value = float(n) / prefix[s]
                 return '%.1f%s' % (value, s)
         return "%sB" % n
-
-    def get_total_size(self, directory):
-        size = 0
-        for file in self.ftp.nlst(directory):
-            size += self.ftp.size(file)
-        size = self.byte_convert(size)
-        return size
-
-
-    def call(self):
-        try:
-            #
-            if len(self.argv) == 2:
-                print("{} : {}".format(self.argv[1], self.get_total_size(self.argv[1])))
-            elif len(self.argv) == 1:
-                ls = []
-                self.ftp.retrlines('MLSD', ls.append)
-                for entry in ls:
-                    name = entry.split(";")[-1].lstrip()
-                    r1 = re.findall(r"type=(file|dir)", entry)
-                    type = ''.join(r1)
-                    if type == "dir":
-                        cprint("[blue]{}[/blue] : {}".format(name, self.get_total_size(name)))
-                    else:
-                        print("{} : {}".format(name, self.byte_convert(self.ftp.size(name))))
-            else:
-                error('[Error] : df or df <folder>')
-        except :
-            warning('File or Folder may not exist or you may not have permission to access it.')

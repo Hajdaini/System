@@ -1,7 +1,7 @@
 #coding:utf-8
 
-from io import StringIO
 import sys
+from io import StringIO
 
 class Capture(list):
     def __enter__(self):

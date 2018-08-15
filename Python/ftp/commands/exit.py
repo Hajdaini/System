@@ -1,11 +1,12 @@
-#coding:utf-8
+# coding:utf-8
 
-from commands.Command import Command
+from modules.Command import Command
 from modules.color import color
 
+
 class exit(Command):
-    def __init__(self, args, ftp, address, user):
-        Command.__init__(self, args, ftp, address, user)
+    def __init__(self, args, ftp):
+        Command.__init__(self, args, ftp)
 
     def call(self):
-        color("[b]Good Bye {}![/b]".format(self.user if self.user != "" else "Anonymous"), True)
+        color("[b]Good Bye {}![/b]".format(self.ftp.user if self.ftp.user != "" else "Anonymous"), True)
