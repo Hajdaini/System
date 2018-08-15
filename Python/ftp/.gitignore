@@ -5,6 +5,7 @@ utils/__pycache__/
 venv/
 .idea/
 test/
+lire-ecrire-editer/
 test.py
 commands/test.py
 .idea/*
