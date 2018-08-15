@@ -68,7 +68,7 @@ class ls(Command):
                 self.ftp.retrlines("LIST -a {}".format(path))
             for idx, el in enumerate(output):
                 file = nlst[idx]
-                output[idx] = "[b][blue]{}[/endc]/".format(file) if el[0] == "d" else file
+                output[idx] = "[b][blue]{}[/endc]/".format(file.replace("./", "")) if el[0] == "d" else file
             cprint("    ".join(output))
         else:
             warning("invalid options")
@@ -81,7 +81,7 @@ class ls(Command):
                 if line[0] == "d":
                     file = "[b][blue]{}[/endc]/".format(file)
                 else:
-                    file = "[b][header]{}[/endc]".format(file)
+                    file = "[b][header]{}[/endc]".format(file.replace("./", ""))
             elif line[0] == "d":
                 file = "[b][blue]{}[/endc]/".format(file)
             cprint("{}{}".format(line, file))
