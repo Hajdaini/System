@@ -302,3 +302,4 @@ class Ftp(FTP):
             if " " in el:
                 path[idx] = "'{}'".format(el)
         return "/".join(path)
+
