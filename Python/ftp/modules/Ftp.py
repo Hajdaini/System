@@ -1,6 +1,6 @@
 # coding:utf-8
 
-import io, re, os
+import io, re, os, time
 from ftplib import FTP
 from pathlib import Path
 from modules.color import *
@@ -158,17 +158,17 @@ class Ftp(FTP):
                 dest = self.abspath(destpath, el)
                 self.pull(src, dest, overwrite)
 
-    def push(self, srcpath, destpath="./", overwrite=False):
+    def push(self, srcpath, destpath="./", overwrite=False, _initial=True):
         """
         Envoie une arborescence de fichiers au serveur
         """
+        if _initial:
+            start_time = time.time()
         if srcpath[-1] == "/":
             srcpath = srcpath[0:-1]
         srcpath = self.cabspath(srcpath)
         destpath = self.sabspath(destpath)
         self.create_tree(destpath)
-        #print("Local: {}\nRemote: {}".format(srcpath, destpath))
-        #return
         destpath = self.abspath(destpath, srcpath.split("/")[-1])
         if not Path(srcpath).exists():
             return warning("Local file not exists: " + srcpath)
@@ -179,7 +179,11 @@ class Ftp(FTP):
                 file = open(srcpath, "rb")
                 try:
                     self.storbinary("STOR /" + destpath, file)
+                    if self.debug:
+                        cprint("{}...[b][green]OK[/endc]".format(srcpath))
                 except:
+                    if self.debug:
+                        cprint("{}...[b][error]FAILED[/endc]".format(srcpath))
                     return warning("Transfer failed: " + srcpath)
                 file.close()
             except:
@@ -188,13 +192,21 @@ class Ftp(FTP):
             if not self.exists(destpath):
                 try:
                     self.mkd(destpath)
+                    if self.debug:
+                        cprint("{}...[b][green]OK[/endc]".format(srcpath))
                 except:
+                    if self.debug:
+                        cprint("{}...[b][error]FAILED[/endc]".format(srcpath))
                     return warning("Failed to create remote directory: " + destpath)
             ls = os.listdir(srcpath)
-            for el in ls:
+            for idx, el in enumerate(ls):
                 src = self.abspath(srcpath, el)
                 dest = self.abspath(destpath, el)
-                self.push(src, dest, overwrite)
+                self.push(src, dest, overwrite, False)
+        if _initial:
+            stop_time = time.time()
+            elapsed_time = stop_time - start_time
+            info("Elapsed time: {}s".format(elapsed_time))
 
     def create_tree(self, path="./", local=False):
         if len(path) == 1 and path[0] == "/":
@@ -206,9 +218,12 @@ class Ftp(FTP):
         else:
             path = self.sabspath(path)
             parent = "/".join(path.split("/")[0:-1])
+            if parent == "":
+                parent = "/"
             if not self.exists(parent):
                 self.create_tree(parent)
-            self.mkd(path)
+            if not self.exists(path):
+                self.mkd(path)
 
     # ------------------------------------------------------------
     # PATHS DEFINITION
@@ -255,6 +270,7 @@ class Ftp(FTP):
             return path
         pwd = self._trim(pwd.split("/"))
         cpath = path.split("/")
+        print(path)
         for idx, el in enumerate(path.split("/")):
             if el == ".." or el == ".":
                 del cpath[0]
@@ -263,6 +279,9 @@ class Ftp(FTP):
             else:
                 break
         path = "{}/{}".format("/".join(pwd), "/".join(cpath))
+        print(path)
+        if len(path) > 1 and path[-1] == "/":
+            path = path[0:-1]
         return "/" + path if isroot and path[0] != "/" else path
 
     # ------------------------------------------------------------
