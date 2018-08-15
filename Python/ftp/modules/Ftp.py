@@ -166,9 +166,9 @@ class Ftp(FTP):
             srcpath = srcpath[0:-1]
         srcpath = self.cabspath(srcpath)
         destpath = self.sabspath(destpath)
-        print("Local: {}\nRemote: {}".format(srcpath, destpath))
-        return
         self.create_tree(destpath)
+        #print("Local: {}\nRemote: {}".format(srcpath, destpath))
+        #return
         destpath = self.abspath(destpath, srcpath.split("/")[-1])
         if not Path(srcpath).exists():
             return warning("Local file not exists: " + srcpath)
@@ -197,6 +197,8 @@ class Ftp(FTP):
                 self.push(src, dest, overwrite)
 
     def create_tree(self, path="./", local=False):
+        if len(path) == 1 and path[0] == "/":
+            return
         if local:
             path = self.cabspath(path)
             if not Path(path).exists():
@@ -217,6 +219,10 @@ class Ftp(FTP):
         Recompose un chemin absolu a partir de la position sur le terminal client
         """
         path = path.replace("\\", "/")
+        if os.name == "nt" and path[1] == ":":
+            return path
+        elif path[0] == "/" or path.startswith(self.chome):
+            return path
         try:
             pwd = self.chome
             return self.abspath(pwd, path)
@@ -228,7 +234,9 @@ class Ftp(FTP):
         Recompose un chemin absolu a partir de la position sur le yrtminal serveur
         """
         path = path.replace("\\", "/")
-        if path[0] == "/" or path.startswith(self.chome):
+        if os.name == "nt" and path.startswith(self.home[0:2]):
+            return path
+        elif path[0] == "/" or path.startswith(self.home):
             return path
         if path[0] == "~":
             return self.home + path[1:]
@@ -243,7 +251,7 @@ class Ftp(FTP):
         Recompose un chemin absolu a partir de deux chaines quelconques
         """
         isroot = True if pwd[0] == "/" else False
-        if path[0] == "/" or path.startswith(self.chome):
+        if path[0] == "/" or path.startswith(self.chome[0:2]):
             return path
         pwd = self._trim(pwd.split("/"))
         cpath = path.split("/")
@@ -255,7 +263,7 @@ class Ftp(FTP):
             else:
                 break
         path = "{}/{}".format("/".join(pwd), "/".join(cpath))
-        return "/" + path if isroot else path
+        return "/" + path if isroot and path[0] != "/" else path
 
     # ------------------------------------------------------------
     # UTILITIES
