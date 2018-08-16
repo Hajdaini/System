@@ -3,6 +3,7 @@
 import re
 from modules.Command import Command
 from modules.color import *
+import time
 
 
 class df(Command):
@@ -29,8 +30,10 @@ class df(Command):
             warning("invalid options")
 
     def call(self):
+        start_time = time.time()
         self.input_error_handle(self.used_without_options, self.used_with_options, 'both', True, True, self.used_alone,
                                 self.used_alone_with_options)
+        print("Finish in {0:.4f} s".format(time.time() - start_time))
 
     def output_handle(self, path_to_verify, human_size=False):
         path_to_verify = self.ftp.sabspath(path_to_verify)
