@@ -76,7 +76,7 @@ class ls(Command):
 
     def colorize(self, list, nlst):
         for idx, el in enumerate(list):
-            file = nlst[idx]
+            file = nlst[idx].split("/")[-1]
             line = el[0:(len(file) * -1)]
             if file[0] == ".":
                 if line[0] == "d":
@@ -85,4 +85,4 @@ class ls(Command):
                     file = "[b][header]{}[/endc]".format(file.replace("/", ""))
             elif line[0] == "d":
                 file = "[b][blue]{}[/endc]/".format(file)
-            cprint("{}{}".format(line, file))
+            cprint("{} {}".format(line, file))

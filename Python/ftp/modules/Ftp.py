@@ -84,11 +84,20 @@ class Ftp(FTP):
         Verifieifie si le fichier distant existe
         """
         path = self.sabspath(path)
-        try:
-            self.nlst(path)
+        if len(path) == 1 and path[0] == "/":
             return True
+        parent = self.abspath(path, "../")
+        try:
+            list = self.nlst(parent)
         except:
             return False
+        with Capture() as output:
+            self.dir(parent)
+        path = path.split("/")[-1]
+        for idx, el in enumerate(list):
+            if path == el.split("/")[-1]:
+                return True
+        return False
 
     # ------------------------------------------------------------
     # FILESYSTEM INSPECTION
@@ -159,7 +168,7 @@ class Ftp(FTP):
                         cprint("{}...[b][green]OK[/endc]".format(srcpath))
                 except:
                     if self.debug:
-                        cprint("{}...[b][error]FAILED[/endc]".format(srcpath))
+                        cprint("{}...[b][fail]FAILED[/endc]".format(srcpath))
                     return warning("Transfer failed: " + srcpath)
                 file.close()
             except:
@@ -172,8 +181,9 @@ class Ftp(FTP):
                         cprint("{}...[b][green]OK[/endc]".format(srcpath))
                 except:
                     if self.debug:
-                        cprint("{}...[b][error]FAILED[/endc]".format(srcpath))
-                    return warning("Failed to create remote directory: " + destpath)
+                        return cprint("{}...[b][fail]FAILED[/endc]".format(srcpath))
+                    else:
+                        return warning("Failed to create remote directory: " + destpath)
             ls = self.nlst(srcpath)
             for idx, el in enumerate(ls):
                 src = self.abspath(srcpath, el.split("/")[-1])
@@ -206,8 +216,9 @@ class Ftp(FTP):
                         cprint("{}...[b][green]OK[/endc]".format(srcpath))
                 except:
                     if self.debug:
-                        cprint("{}...[b][error]FAILED[/endc]".format(srcpath))
-                    return warning("Transfer failed: " + srcpath)
+                        return cprint("{}...[b][fail]FAILED[/endc]".format(srcpath))
+                    else:
+                        return warning("Transfer failed: " + srcpath)
                 file.close()
             except:
                 return warning("Could not acceess local file: " + srcpath)
@@ -219,8 +230,9 @@ class Ftp(FTP):
                         cprint("{}...[b][green]OK[/endc]".format(srcpath))
                 except:
                     if self.debug:
-                        cprint("{}...[b][error]FAILED[/endc]".format(srcpath))
-                    return warning("Failed to create remote directory: " + destpath)
+                        return cprint("{}...[b][fail]FAILED[/endc]".format(srcpath))
+                    else:
+                        return warning("Failed to create remote directory: " + destpath)
             ls = os.listdir(srcpath)
             for idx, el in enumerate(ls):
                 src = self.abspath(srcpath, el)
