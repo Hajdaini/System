@@ -51,6 +51,7 @@ class ls(Command):
         print(output)
 
     def print_ls_with_options(self, path):
+        path = self.ftp.sabspath(path)
         with Capture() as nlst:
             if "a" in self.argv[1] or "A" in self.argv[1]:
                 self.ftp.retrlines("NLST -a " + path)
@@ -68,7 +69,7 @@ class ls(Command):
                 self.ftp.retrlines("LIST -a {}".format(path))
             for idx, el in enumerate(output):
                 file = nlst[idx]
-                output[idx] = "[b][blue]{}[/endc]/".format(file.replace("./", "")) if el[0] == "d" else file
+                output[idx] = "[b][blue]{}[/endc]/".format(file.replace("/", "")) if el[0] == "d" else file
             cprint("    ".join(output))
         else:
             warning("invalid options")
@@ -79,9 +80,9 @@ class ls(Command):
             line = el[0:(len(file) * -1)]
             if file[0] == ".":
                 if line[0] == "d":
-                    file = "[b][blue]{}[/endc]/".format(file)
+                    file = "[b][blue]{}[/endc]/".format(file.replace("/", ""))
                 else:
-                    file = "[b][header]{}[/endc]".format(file.replace("./", ""))
+                    file = "[b][header]{}[/endc]".format(file.replace("/", ""))
             elif line[0] == "d":
                 file = "[b][blue]{}[/endc]/".format(file)
             cprint("{}{}".format(line, file))

@@ -8,7 +8,7 @@ from commands.touch import touch
 class Parser:
     def __init__(self, ftp):
         self.ftp = ftp
-        self.debug = False
+        self.debug = 0
 
     def split(self, str):
         """
@@ -92,7 +92,7 @@ class Parser:
         Debug True: Appel non protege
         Debug False: Appel protege
         """
-        if self.debug == True:
+        if self.debug:
             self._call(cmd)
         else:
             try:
