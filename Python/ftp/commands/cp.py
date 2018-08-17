@@ -1,7 +1,7 @@
 # coding:utf-8
 
 from modules.Command import Command
-from modules.color import error, info
+from modules.color import *
 import time
 
 class cp(Command):
@@ -9,7 +9,9 @@ class cp(Command):
         Command.__init__(self, args, ftp)
 
     def call(self):
+        info('Begin cp, please wait ...')
         start_time = time.time()
         self.ftp.pull(self.argv[1], './udload')
+        info('Pull is finish now we push, please wait ...')
         self.ftp.push('./udload/' + self.argv[1], self.argv[2])
         print("Finish in {0:.4f} s".format(time.time() - start_time))
