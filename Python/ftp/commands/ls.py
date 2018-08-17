@@ -13,7 +13,7 @@ class ls(Command):
 
     [b]SYNOPSIS[/b]
 
-    [b]ls[/b]   [[u]OPTION[/u]]... [[u]FILE[/u]]...
+    [b]ls[/b]   [[u]-al[/u]] [[u]FILE[/u]]...
 
     [b]DESCRIPTION[/b]
 
