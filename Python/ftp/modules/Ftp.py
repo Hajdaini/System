@@ -162,11 +162,13 @@ class Ftp(FTP):
             return warning("Remote file already exists: " + destpath)
         elif self.is_file(srcpath):
             try:
-                self.retrbinary("RETR " + srcpath, self.set_cp_buffer, 3276800)
-                self.storbinary("STOR " + destpath, io.BytesIO(self.cp_buffer), 3276800)
+                cprint("{}...[b][blue]COPYING[/endc]".format(srcpath))
+                self.retrbinary("RETR " + srcpath, self.set_cp_buffer)
+                self.storbinary("STOR " + destpath, io.BytesIO(self.cp_buffer))
                 self.cp_buffer = None
+                cprint("{}...[b][green]OK[/endc]".format(srcpath))
             except:
-                return warning("Could not access temporary file")
+                cprint("{}...[b][fail]FAILED[/endc]".format(srcpath))
         else:
             if not self.exists(destpath):
                 try:

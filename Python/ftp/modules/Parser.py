@@ -74,9 +74,8 @@ class Parser:
                 if prevredir == "|":
                     cmd = [cmd[0], "\n".join(stdin)]
                 #print(cmd)
-                with Capture() as stdin:
-                    self.execute(cmd)
-                if idx == slen - 1 or el == "&":
+                self.execute(cmd)
+                if True == False and idx == slen - 1 or el == "&":
                     for str in stdin:
                         cprint(str)
                 if cmd[0] == "exit":
