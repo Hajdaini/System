@@ -22,6 +22,7 @@ class Ftp(FTP):
         self.address = address
         self.user = user
         self.port = port
+        self.cp_buffer = None
 
     # ------------------------------------------------------------
     # FILESYSTEM TESTS
@@ -143,6 +144,54 @@ class Ftp(FTP):
     # ------------------------------------------------------------
     # DATA TRANSFERS
     # ------------------------------------------------------------
+
+    def cp(self, srcpath, destpath="./", overwrite=False, _initial=True):
+        """
+        Copie un fichier ou repertoire d'un endroit du serveur a un autre
+        """
+        if _initial:
+            Bench.mark("start cp")
+            srcpath = self.sabspath(srcpath)
+            destpath = self.sabspath(destpath)
+            if self.is_dir(srcpath):
+                self.create_tree(destpath)
+            destpath = self.abspath(destpath, srcpath.split("/")[-1])
+            if not self.exists(srcpath):
+                return warning("Remote file not exists: " + srcpath)
+        if self.is_file(destpath) and overwrite == False:
+            return warning("Remote file already exists: " + destpath)
+        elif self.is_file(srcpath):
+            try:
+                self.retrbinary("RETR " + srcpath, self.set_cp_buffer, 3276800)
+                self.storbinary("STOR " + destpath, io.BytesIO(self.cp_buffer), 3276800)
+                self.cp_buffer = None
+            except:
+                return warning("Could not access temporary file")
+        else:
+            if not self.exists(destpath):
+                try:
+                    self.mkd(destpath)
+                    if self.debug:
+                        cprint("{}...[b][green]OK[/endc]".format(srcpath))
+                except:
+                    if self.debug:
+                        return cprint("{}...[b][fail]FAILED[/endc]".format(srcpath))
+                    else:
+                        return warning("Failed to create remote directory: " + destpath)
+            ls = self.nlst(srcpath)
+            for idx, el in enumerate(ls):
+                el = el.split("/")[-1]
+                src = self.abspath(srcpath, el)
+                dest = self.abspath(destpath, el)
+                self.cp(src, dest, overwrite, False)
+        if _initial:
+            info("Elapsed time: {0:.4f}s".format(Bench.elapsed_time("start cp")))
+
+    def set_cp_buffer(self, buf):
+        if self.cp_buffer == None:
+            self.cp_buffer = buf
+        else:
+            self.cp_buffer += buf
 
     def pull(self, srcpath, destpath="./", overwrite=False, _initial=True):
         """
