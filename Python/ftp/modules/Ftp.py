@@ -161,6 +161,7 @@ class Ftp(FTP):
         if self.is_file(destpath) and overwrite == False:
             return warning("Remote file already exists: " + destpath)
         elif self.is_file(srcpath):
+            print("{} bytes for file:".format(self.size(srcpath)))
             try:
                 cprint("{}...[b][blue]COPYING[/endc]".format(srcpath))
                 self.retrbinary("RETR " + srcpath, self.set_cp_buffer)
