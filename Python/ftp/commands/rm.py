@@ -1,8 +1,9 @@
 #coding:utf-8
 
 from modules.Command import Command
-from modules.color import error
+from modules.color import error, cprint
 from modules.color import warning
+import time
 
 class rm(Command):
     def __init__(self, args, ftp):
@@ -36,27 +37,9 @@ class rm(Command):
             warning('invalid options')
 
     def call(self):
+        start_time = time.time()
         self.input_error_handle(self.without_options_handle, self.with_options_handle)
-
-        # if len(self.argv) >= 3 and (self.argv[1] == "-d" or self.argv[1] == "-D"):
-        #     for idx, el in enumerate(self.argv):
-        #         if idx >= 2:
-        #             if self.ftp.is_dir(el) and self.ftp.is_empty(el):
-        #                 self.del_dir(el)
-        #             else:
-        #                 warning(el + " is not a directory or not empty")
-        # elif len(self.argv) >= 3 and (self.argv[1] == "-r" or self.argv[1] == "-R"):
-        #     for idx, el in enumerate(self.argv):
-        #         if idx >= 2:
-        #             self.del_recursive(self.ftp.sabspath(el))
-        # else:
-        #     for idx, el in enumerate(self.argv):
-        #         if idx >= 1:
-        #             el = self.ftp.sabspath(el)
-        #             if self.ftp.is_file(el):
-        #                 self.del_file(el)
-        #             else:
-        #                 warning(el + " is not a file or permission denied")
+        info("Elapsed time: {0:.4f}s".format(time.time() - start_time))
 
     def del_recursive(self, path):
         if self.ftp.is_file(path):
@@ -66,7 +49,9 @@ class rm(Command):
             if len(cnt):
                 for key, el in cnt.items():
                     if el["type"] == "file":
-                        self.del_file(self.ftp.abspath(path, el["name"]))
+                        srcpath = self.ftp.abspath(path, el["name"])
+                        self.del_file(srcpath)
+                        cprint("{}...[green]OK[/green]".format(srcpath))
                     else:
                         self.del_recursive(self.ftp.abspath(path, el["name"]))
             self.del_dir(path)
@@ -78,3 +63,4 @@ class rm(Command):
     def del_dir(self, path):
         path = self.ftp.sabspath(path)
         self.ftp.rmd(path)
+        cprint("{}...[green]OK[/green]".format(path))

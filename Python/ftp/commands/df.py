@@ -33,7 +33,7 @@ class df(Command):
         start_time = time.time()
         self.input_error_handle(self.used_without_options, self.used_with_options, 'both', True, True, self.used_alone,
                                 self.used_alone_with_options)
-        info("Finish in {0:.4f} s\n".format(time.time() - start_time))
+        info("Elapsed time: {0:.4f}s".format(time.time() - start_time))
 
     def output_handle(self, path_to_verify, human_size=False):
         path_to_verify = self.ftp.sabspath(path_to_verify)
@@ -47,7 +47,7 @@ class df(Command):
                 else:
                     size = self.ftp.size(path)
                     self.total_size.append(size)
-                    print("[warning]{}[/warning] : {}".format(size, path))
+                    cprint("[warning]{}[/warning] : {}".format(size, path))
 
     def print_total_size(self, human_size):
         total = sum(self.total_size)
@@ -67,9 +67,9 @@ class df(Command):
                     size = self.ftp.size(abs_path)
                     self.total_size.append(size)
                     if human_size:
-                        print("[warning]{}[/warning] : {}".format(self.byte_convert(size), path))
+                        cprint("[warning]{}[/warning] : {}".format(self.byte_convert(size), path))
                     else:
-                        print("[warning]{}[/warning] : {}".format(size, path))
+                        cprint("[warning]{}[/warning] : {}".format(size, path))
             except:
                 warning("You dont have permission for: {}".format(abs_path))
 

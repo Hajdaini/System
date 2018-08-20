@@ -56,7 +56,7 @@ class ls(Command):
                 output += "[blue]{}[/blue]/    ".format(filename)
             else:
                 output += "{}    ".format(filename)
-        print(output)
+        cprint(output)
 
     def print_ls_with_options(self, path):
         path = self.ftp.sabspath(path)
