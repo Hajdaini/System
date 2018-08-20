@@ -9,7 +9,7 @@ class Connector:
     """
     Gere la connexion au serveur
     """
-    def __init__(self, address="127.0.0.1", user="anonymous", password="", port=21, timeout=30):
+    def __init__(self, address="127.0.0.1", user="anonymous", password="", port=21, timeout=1800):
         self.address = address
         self.user = user
         self.password = password
