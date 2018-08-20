@@ -28,7 +28,7 @@ class cat(Command):
             equivalent to [b]-vE[/b]
 
         [b]-E[/b]
-             Display an [b]$[/b] at end of each libe
+             Display an [b]$[/b] at end of each line
 
         [b]-n[/b]
             number all output lines, including empty ones
