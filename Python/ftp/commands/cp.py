@@ -2,6 +2,7 @@
 
 from modules.Command import Command
 
+
 class cp(Command):
     """
     [b]SYNOPSIS[/b]

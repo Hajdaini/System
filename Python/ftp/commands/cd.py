@@ -14,6 +14,7 @@ class cd(Command):
 
         Change the ftp working directory
     """
+
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 

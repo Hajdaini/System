@@ -3,6 +3,7 @@
 from modules.Command import Command
 from modules.color import warning
 
+
 class mkdir(Command):
     """
     [b]SYNOPSIS[/b]
@@ -13,6 +14,7 @@ class mkdir(Command):
 
         Create directory, if they not do not exist
     """
+
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 

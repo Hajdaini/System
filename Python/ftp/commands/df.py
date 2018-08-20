@@ -21,6 +21,7 @@ class df(Command):
         [b]-h[/b]
              human-readable : print sizes in powers of 1000
     """
+
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
         self.total_size = []

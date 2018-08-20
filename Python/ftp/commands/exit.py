@@ -14,6 +14,7 @@ class exit(Command):
 
         exit the ftp program
     """
+
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 

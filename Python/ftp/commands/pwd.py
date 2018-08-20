@@ -13,6 +13,7 @@ class pwd(Command):
 
         print name of current/working directory
     """
+
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 

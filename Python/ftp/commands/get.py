@@ -2,6 +2,7 @@
 
 from modules.Command import Command
 
+
 class get(Command):
     """
     [b]SYNOPSIS[/b]
@@ -12,6 +13,7 @@ class get(Command):
 
         download file or directory from the remote machine to your local machine
     """
+
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 

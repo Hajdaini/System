@@ -13,6 +13,7 @@ class welcome(Command):
 
         print the welcome message of the remote machine
     """
+
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 

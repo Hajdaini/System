@@ -13,6 +13,7 @@ class echo(Command):
 
         display a line of text
     """
+    
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 

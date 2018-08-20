@@ -1,8 +1,8 @@
 # coding:utf-8
 
-from modules.Command import Command
-from modules.color import error, warning
 from modules.Capture import Capture
+from modules.Command import Command
+from modules.color import error
 
 
 class cat(Command):

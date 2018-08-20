@@ -2,6 +2,7 @@
 
 from modules.Command import Command
 
+
 class put(Command):
     """
     [b]SYNOPSIS[/b]
@@ -12,6 +13,7 @@ class put(Command):
 
         upload file or directory from the local machine to your remote machine
     """
+
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 

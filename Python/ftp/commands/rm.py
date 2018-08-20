@@ -1,9 +1,11 @@
-#coding:utf-8
+# coding:utf-8
+
+import time
 
 from modules.Command import Command
-from modules.color import error, cprint
+from modules.color import cprint
 from modules.color import warning
-import time
+
 
 class rm(Command):
     """
