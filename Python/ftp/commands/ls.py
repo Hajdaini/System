@@ -7,25 +7,21 @@ from modules.Capture import Capture
 
 class ls(Command):
     """
-    [b]NAME[/b]
-
-    ls - List directory contents
-
     [b]SYNOPSIS[/b]
 
-    [b]ls[/b]   [[u]-al[/u]] [[u]FILE[/u]]...
+        [b]ls[/b]   [u]PATH[/u]
 
     [b]DESCRIPTION[/b]
 
-    Lists all FILES within specified directory (current directory by default).
+        Lists all FILES and DIRECTORIES within specified directory (current directory by default).
 
     [b]OPTIONS[/b]
 
-    [b]-a[/b]
-        Include hidden files within listed contents
+        [b]-a[/b]
+            Include hidden files within listed contents
 
-    [b]-l[/b]
-        Show FILES list with more details
+        [b]-l[/b]
+            Show FILES list with more details
     """
 
     def __init__(self, args, ftp):

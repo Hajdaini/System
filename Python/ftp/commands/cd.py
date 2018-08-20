@@ -5,6 +5,15 @@ from modules.color import error
 
 
 class cd(Command):
+    """
+    [b]SYNOPSIS[/b]
+
+        [b]cd[/b]   [u]DIR[/u]
+
+    [b]DESCRIPTION[/b]
+
+        Change the ftp working directory
+    """
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 

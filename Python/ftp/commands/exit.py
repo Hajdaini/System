@@ -5,6 +5,15 @@ from modules.color import color
 
 
 class exit(Command):
+    """
+    [b]SYNOPSIS[/b]
+
+        [b]exit[/b]
+
+    [b]DESCRIPTION[/b]
+
+        exit the ftp program
+    """
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 

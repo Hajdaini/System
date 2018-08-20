@@ -7,6 +7,20 @@ import time
 
 
 class df(Command):
+    """
+    [b]SYNOPSIS[/b]
+
+        [b]df[/b]   [[u]OPTION[/u]]... [u]PATH[/u]
+
+    [b]DESCRIPTION[/b]
+
+        report file or directory system disk space usage
+
+    [b]OPTIONS[/b]
+
+        [b]-h[/b]
+             human-readable : print sizes in powers of 1000
+    """
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
         self.total_size = []

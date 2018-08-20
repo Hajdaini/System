@@ -7,6 +7,27 @@ from modules.Capture import Capture
 
 
 class wc(Command):
+    """
+    [b]SYNOPSIS[/b]
+
+        [b]ls[/b]   [[u]OPTION[/u]]...[u]FILE[/u]
+
+    [b]DESCRIPTION[/b]
+
+        print numbers of line, word and character
+
+    [b]OPTIONS[/b]
+
+        [b]-l[/b]
+            print numbers of line
+
+        [b]-w[/b]
+            print numbers of word
+
+        [b]-c[/b]
+            print numbers of character
+    """
+
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 

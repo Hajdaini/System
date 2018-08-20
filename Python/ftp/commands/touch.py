@@ -6,6 +6,16 @@ from modules.color import error
 
 
 class touch(Command):
+    """
+    [b]SYNOPSIS[/b]
+
+        [b]touch[/b]   [u]FILE[/u]
+
+    [b]DESCRIPTION[/b]
+
+        create file
+    """
+
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 

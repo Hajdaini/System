@@ -6,6 +6,21 @@ from modules.Capture import Capture
 
 
 class cat(Command):
+    """
+    [b]SYNOPSIS[/b]
+
+        [b]cat[/b]   [[u]OPTIONS[/u]] [u]FILE[/u]
+
+    [b]DESCRIPTION[/b]
+
+        print file on the standard output
+
+    [b]OPTIONS[/b]
+
+        [b]-b[/b]
+             number nonempty output lines
+    """
+
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
         self.error_message = "Usage : cat [OPTION] <filename>"

@@ -6,6 +6,25 @@ from modules.color import warning
 import time
 
 class rm(Command):
+    """
+    [b]SYNOPSIS[/b]
+
+        [b]rm[/b]   [[u]OPTION[/u]]...[u]PATH[/u]
+
+    [b]DESCRIPTION[/b]
+
+        remove files or directories
+
+    [b]OPTIONS[/b]
+
+        [b]-d[/b]
+            remove directory recursively
+
+        [b]-r[/b]
+            Anthraxx put something here
+
+    """
+
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 
