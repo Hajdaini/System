@@ -8,7 +8,7 @@ class debug(Command):
     """
     [b]SYNOPSIS[/b]
 
-        [b]debug[/b]   [[u]NODE[/u]]
+        [b]debug[/b]   [[u]MODE[/u]]
 
     [b]DESCRIPTION[/b]
 
