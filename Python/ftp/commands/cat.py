@@ -1,5 +1,6 @@
 # coding:utf-8
 
+import re
 from modules.Capture import Capture
 from modules.Command import Command
 from modules.color import error
@@ -40,6 +41,9 @@ class cat(Command):
 
         [b]-T[/b]
             Display TAB character as [b]^I[/b]
+
+        [b]-v[/b]
+            Display all non printable characters as [b]^M[/b] excepted \t and \n
     """
 
     def __init__(self, args, ftp):
@@ -73,6 +77,8 @@ class cat(Command):
                     el = el.replace("\t", "^I")
                 if "b" in opts and el != "" and el != "$":
                     el = "\t{} {}".format(counter, el)
+                if "v" in opts or "A" in opts or "e" in opts or "t" in opts:
+                    el = re.sub(r'[^\x00-\x7F]+', '^M', el)
                 elif "n" in opts:
                     el = "\t{} {}".format(idx + 1, el)
                 if "b" in opts and el != "" and el != "$":
