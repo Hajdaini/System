@@ -1,9 +1,11 @@
-#coding:utf-8
+# coding:utf-8
 
-import sys, shlex, importlib
-from modules.Capture import Capture
-from modules.color import cprint, warning, cinput
-from commands.touch import touch
+import importlib
+import shlex
+import sys
+
+from modules.color import *
+
 
 class Parser:
     def __init__(self, ftp):
@@ -22,13 +24,18 @@ class Parser:
         """
         while True:
             try:
-                seq = cinput("[b][green]ftp://{}@{}:[blue]{}[/endc][b]$>[/endc] ".format(self.ftp.user, self.ftp.address, self.ftp.pwd()))
-            except KeyboardInterrupt:
-                cprint("\n[b]Good Bye {}![/b]".format(self.ftp.user))
-                sys.exit(1)
-            if seq == "":
-                continue
-            self.dispatch(seq)
+                try:
+                    seq = cinput(
+                        "[b][green]ftp://{}@{}:[blue]{}[/endc][b]$>[/endc] ".format(self.ftp.user, self.ftp.address,
+                                                                                    self.ftp.pwd()))
+                except KeyboardInterrupt:
+                    cprint("\n[b]Good Bye {}![/b]".format(self.ftp.user))
+                    sys.exit(1)
+                if seq == "":
+                    continue
+                self.dispatch(seq)
+            except ConnectionAbortedError:
+                fatal("Une connexion établie a été abandonnée par un logiciel de votre ordinateur hôte")
 
     def dispatch(self, str):
         """
@@ -70,10 +77,10 @@ class Parser:
                     warning("Cannot read from stdin")
                     break
             if self.is_redir(el) or idx == slen - 1:
-                #print(cmd)
+                # print(cmd)
                 if prevredir == "|":
                     cmd = [cmd[0], "\n".join(stdin)]
-                #print(cmd)
+                # print(cmd)
                 self.execute(cmd)
                 if True == False and idx == slen - 1 or el == "&":
                     for str in stdin:
