@@ -11,7 +11,7 @@ class rm(Command):
     """
     [b]SYNOPSIS[/b]
 
-        [b]rm[/b]   [[u]OPTION[/u]]...[u]PATH[/u]
+        [b]rm[/b]   [[u]OPTION[/u]] [u]PATH[/u]
 
     [b]DESCRIPTION[/b]
 
@@ -20,10 +20,10 @@ class rm(Command):
     [b]OPTIONS[/b]
 
         [b]-d[/b]
-            remove directory recursively
+            remove a directory if it is empty
 
         [b]-r[/b]
-            Anthraxx put something here
+            remove a directory and all its contents
 
     """
 

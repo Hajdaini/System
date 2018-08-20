@@ -17,8 +17,29 @@ class cat(Command):
 
     [b]OPTIONS[/b]
 
+        [b]-A[/b]
+            equivalent to [b]-vET[/b]
+
         [b]-b[/b]
-             number nonempty output lines
+             number nonempty output lines, overrides [b]-n[/b]
+
+        [b]-e[/b]
+            equivalent to [b]-vE[/b]
+
+        [b]-E[/b]
+             Display an [b]$[/b] at end of each libe
+
+        [b]-n[/b]
+            number all output lines, including empty ones
+
+        [b]-s[/b]
+            suppress repeated empty lines
+
+        [b]-t[/b]
+            equivalent to [b]-vT[/b]
+
+        [b]-T[/b]
+            Display TAB character as [b]^I[/b]
     """
 
     def __init__(self, args, ftp):
