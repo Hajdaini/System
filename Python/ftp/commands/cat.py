@@ -3,14 +3,13 @@
 import re
 from modules.Capture import Capture
 from modules.Command import Command
-from modules.color import error
-
+from modules.color import warning
 
 class cat(Command):
     """
     [b]SYNOPSIS[/b]
 
-        [b]cat[/b]   [[u]OPTIONS[/u]] [u]FILE[/u]
+        [b]cat[/b]   [[u]OPTIONS[/u]] [u]FILE[/u]...
 
     [b]DESCRIPTION[/b]
 
@@ -51,21 +50,34 @@ class cat(Command):
         self.error_message = "Usage : cat [OPTION] <filename>"
 
     def call(self):
-        if self.argc == 1 and " " in self.argv[1]:
+        if self.argc == 2 and " " in self.argv[1]:
             self.argv = self.argv[1].split()
-        self.input_error_handle(self.without_options_handle, self.with_options_handle, 'file')
+        tests = [
+            {
+                "callback": self.with_options_handle,
+                "options": "require",
+                "files": "require"
+            },
+            {
+                "callback": self.without_options_handle,
+                "files": "require"
+            }
+        ]
+        self.input_error_handle(tests)
 
     def without_options_handle(self):
-        path = self.ftp.sabspath(self.argv[1])
-        try:
-            self.ftp.retrlines("RETR " + path, print(end=""))
-        except:
-            error("Invalid file type")
+        for file in self.argv[1:]:
+            path = self.ftp.sabspath(file)
+            try:
+                self.ftp.retrlines("RETR " + path, print(end=""))
+            except:
+                warning("Invalid file: " + file)
 
     def with_options_handle(self):
-        path = self.ftp.sabspath(self.argv[2])
         opts = self.argv[1]
-        self.options_handle(path, opts)
+        for file in self.argv[2:]:
+            path = self.ftp.sabspath(file)
+            self.options_handle(path, opts)
 
     def options_handle(self, path, opts=""):
         try:
@@ -81,11 +93,11 @@ class cat(Command):
                     el = "\t{} {}".format(counter, el)
                 if "v" in opts or "A" in opts or "e" in opts or "t" in opts:
                     el = re.sub(r'[^\x00-\x7F]+', '^M', el)
-                elif "n" in opts:
-                    el = "\t{} {}".format(idx + 1, el)
                 if "b" in opts and el != "" and el != "$":
                     counter += 1
+                elif "n" in opts:
+                    el = "\t{} {}".format(idx + 1, el)
                 if not "s" in opts or ("s" in opts and el != "" and el != "$"):
                     print(el)
         except:
-            error("Invalid file type")
+            warning("Invalid file: " + path.split("/")[-1])
