@@ -28,8 +28,7 @@ class ls(Command):
         Command.__init__(self, args, ftp)
 
     def call(self):
-        self.input_error_handle(self.used_without_options, self.used_with_options, 'both', True, True, self.used_alone,
-                                self.used_alone_with_options)
+        self.input_handle()
 
     def used_alone(self):
         ls_info_dict = self.ftp.ls_info()

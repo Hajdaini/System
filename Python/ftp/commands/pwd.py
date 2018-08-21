@@ -2,7 +2,6 @@
 
 from modules.Command import Command
 
-
 class pwd(Command):
     """
     [b]SYNOPSIS[/b]
@@ -18,4 +17,11 @@ class pwd(Command):
         Command.__init__(self, args, ftp)
 
     def call(self):
+        self.input_handle()
+
+    def used_alone(self):
         print(self.ftp.pwd())
+
+    def handle_error(self):
+        warning("This command takes no arguments")
+        self.help()

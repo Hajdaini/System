@@ -13,7 +13,7 @@ class cat(Command):
 
     [b]DESCRIPTION[/b]
 
-        print file on the standard output
+        print file on standard output
 
     [b]OPTIONS[/b]
 
@@ -52,9 +52,9 @@ class cat(Command):
     def call(self):
         if self.argc == 2 and " " in self.argv[1]:
             self.argv = self.argv[1].split()
-        self.input_error_handle(self.without_options_handle, self.with_options_handle, 'file')
+        self.input_handle()
 
-    def without_options_handle(self):
+    def used_without_options(self):
         for file in self.argv[1:]:
             path = self.ftp.sabspath(file)
             try:
@@ -62,7 +62,7 @@ class cat(Command):
             except:
                 warning("Invalid file: " + file)
 
-    def with_options_handle(self):
+    def used_with_options(self):
         opts = self.argv[1]
         for file in self.argv[2:]:
             path = self.ftp.sabspath(file)
@@ -90,3 +90,6 @@ class cat(Command):
                     print(el)
         except:
             warning("Invalid file: " + path.split("/")[-1])
+
+    def handle_error(self):
+        warning("Filename missing")

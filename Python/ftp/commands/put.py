@@ -18,4 +18,13 @@ class put(Command):
         Command.__init__(self, args, ftp)
 
     def call(self):
-        self.ftp.push(self.argv[1])
+        self.input_handle()
+
+    def used_without_options(self):
+        if self.argc == 2:
+            self.argv.append("./")
+        self.ftp.push(self.argv[1], self.argv[2])
+
+    def handle_error(self):
+        warning("Command takes at least a source path")
+        self.help()

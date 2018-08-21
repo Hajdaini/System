@@ -32,13 +32,13 @@ class wc(Command):
         Command.__init__(self, args, ftp)
 
     def call(self):
-        self.input_error_handle(self.without_options_handle, self.with_options_handle, 'file')
+        self.input_handle()
 
-    def without_options_handle(self):
+    def used_without_options(self):
         path = self.ftp.sabspath(self.argv[1])
         self.output_handle(path)
 
-    def with_options_handle(self):
+    def used_with_options(self):
         path = self.ftp.sabspath(self.argv[2])
         self.output_handle(path, self.argv[1])
 
@@ -58,3 +58,7 @@ class wc(Command):
             print("{} :\n{}".format(path, output))
         except:
             error("Invalid file type")
+
+    def handle_error(self):
+        warning("Command takes at least one file path")
+        self.help()

@@ -1,7 +1,7 @@
 # coding:utf-8
 
 from modules.Command import Command
-from modules.color import error
+from modules.color import warning
 
 
 class cd(Command):
@@ -19,10 +19,18 @@ class cd(Command):
         Command.__init__(self, args, ftp)
 
     def call(self):
+        self.input_handle()
+
+    def used_alone(self):
+        self.ftp.cwd(self.ftp.home)
+
+    def used_without_options(self):
         try:
-            if len(self.argv) > 1:
-                self.ftp.sendcmd('CWD {}'.format(self.argv[1]))
-            else:
-                self.ftp.cwd(self.ftp.home)
+            path = self.ftp.sabspath(self.argv[1])
+            self.ftp.cwd(path)
         except:
-            error('Directory may not exist or you may not have permission to view it.')
+            warning('Directory may not exist or you may not have permission to view it.')
+
+    def handle_error(self):
+        warning("This command takes only a path")
+        self.help()
