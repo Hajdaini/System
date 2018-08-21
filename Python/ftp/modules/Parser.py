@@ -33,64 +33,9 @@ class Parser:
                     sys.exit(1)
                 if seq == "":
                     continue
-                self.dispatch(seq)
+                self.execute(shlex.split(seq))
             except ConnectionAbortedError:
                 fatal("Une connexion établie a été abandonnée par un logiciel de votre ordinateur hôte")
-
-    def dispatch(self, str):
-        """
-        Abalyse la sequence decomposee, recree les commandes et les execute
-        """
-        cmd = []
-        stdin = []
-        seq = self.split(str)
-        slen = len(seq)
-        prevredir = None
-        found_std = 0
-        for idx, el in enumerate(seq):
-            if self.is_std(el):
-                found_std = 1
-            if not self.is_redir(el) and not self.is_std(el) and not found_std:
-                cmd.append(el)
-            if el == "<":
-                try:
-                    cmd = self.read_file(seq[idx + 1])
-                except:
-                    warning("File not found")
-                    break
-            if el == ">":
-                try:
-                    cmd = self.write_file(cmd, seq[idx + 1])
-                except:
-                    warning("File not found")
-                    break
-            if el == ">>":
-                try:
-                    cmd = self.concat_file(cmd, seq[idx + 1])
-                except:
-                    warning("File not found")
-                    break
-            elif el == "<<":
-                try:
-                    cmd = self.read_stdin(seq[idx + 1])
-                except:
-                    warning("Cannot read from stdin")
-                    break
-            if self.is_redir(el) or idx == slen - 1:
-                # print(cmd)
-                if prevredir != None and prevredir in "|":
-                    cmd = [cmd[0], "\n".join(stdin)]
-                # print(cmd)
-                if el in "|":
-                    with Capture() as stdin:
-                        self.execute(cmd)
-                else:
-                    self.execute(cmd)
-                cmd = []
-                if self.is_redir(el):
-                    prevredir = el
-            if self.is_redir(el) or idx == slen - 1:
-                prevredir = None if idx == slen - 1 else el
 
     def execute(self, cmd):
         """
@@ -106,34 +51,6 @@ class Parser:
                 self._call(cmd)
             except:
                 warning("Command {} not found. Type help to get available commands".format(cmd[0]))
-
-    def is_redir(self, el):
-        """
-        Definit si un element de la sequence de commandes correspond a un lien ()&, |
-        """
-        return el in "&" or el in "|"
-
-    def is_std(self, el):
-        return el in ">" or el in "<" or el in "<<" or el in ">>"
-
-    def read_stdin(self, stop):
-        cmd = ""
-        tmp = None
-        while tmp != stop:
-            tmp = input("> ")
-            if tmp != stop:
-                cmd = "{}{}".format(cmd, tmp)
-        return cmd
-
-    def read_file(self, path):
-        return self.ftp.read_file(path)
-
-    def write_file(self, path, data):
-        self.ftp.write_file(path, data)
-
-    def concat_file(self, path, data):
-        text = self.read_file(path)
-        self.write_file(path, "{}{}".format(text))
 
     def _call(self, cmd):
         """
