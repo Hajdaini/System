@@ -11,17 +11,54 @@ class Command:
         self.user = self.ftp.user
         self.util = Loader().load("utils")
 
+    """
+    def input_error_handle(args):
+        for el in args:
+            if "callback" not in el:
+                warning("Callnack function must be given")
+            files = el["files"] if "files" in el else "reject"
+            options = el["files"] if "files" in el else "reject"
+            hasoption = self.argc >= 2 and len(self.argv[1]) and self.argv[1][0] == "-"
+            if files in "require":
+                if self.argc == 2:
+                    if hasoption:
+                        if options not in "reject":
+                            warning("Command requires almost one filename")
+                            return True
+                        else:
+                            warning("Command accepts only files")
+                            return True
+                    else:
+                        el["callback"]()
+                        continue
+            elif files in "reject":
+                if self.argc >= 3:
+                    warning("Command do not accept filenames")
+                    return True
+                elif self.argc == 2 and not hasoption:
+                    warning("Command do not accept filenames")
+                    return True
+            if options in "require" and (self.argc == 1 or not hasoption):
+                warning("Command options are required")
+                return True
+            elif options in "reject" and (self.argc == 1 or hasoption):
+                warning("Command do not accept options")
+                return True
+            else:
+                el["callback"]()
+                continue
+            return True
+        return False
+    """
+
     def input_error_handle(self, funtion_2_args, funtion_3_args, type_to_verify='both', used_alone=False,
                            used_alone_with_options=False,
                            function_alone=None, function_with_only_option=None):
+        type_errors = {"both": "Directory or file missing", "dir": "Directory missing", "file": "File missing"}
         if self.argc == 1:
             if used_alone == False:
-                if type_to_verify == 'both':
-                    warning("Directory or file missing")
-                elif type_to_verify == 'dir':
-                    warning("Directory missing")
-                elif type_to_verify == 'file':
-                    warning("Filename missing")
+                if type_to_verify in type_errors:
+                    warning(type_errors[type_to_verify])
                 else:
                     fatal('wrong type x259545')
                 return True

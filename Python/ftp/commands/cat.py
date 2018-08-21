@@ -51,6 +51,8 @@ class cat(Command):
         self.error_message = "Usage : cat [OPTION] <filename>"
 
     def call(self):
+        if self.argc == 1 and " " in self.argv[1]:
+            self.argv = self.argv[1].split()
         self.input_error_handle(self.without_options_handle, self.with_options_handle, 'file')
 
     def without_options_handle(self):

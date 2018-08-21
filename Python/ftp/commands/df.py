@@ -45,6 +45,8 @@ class df(Command):
             warning("invalid options")
 
     def call(self):
+        if self.argc == 1 and " " in self.argv[1]:
+            self.argv = self.argv[1].split()
         start_time = time.time()
         self.input_error_handle(self.used_without_options, self.used_with_options, 'both', True, True, self.used_alone,
                                 self.used_alone_with_options)
