@@ -59,11 +59,6 @@ def fatal(str):
 
 
 def warning(str):
-    title = "WARNING"
-    ustr = uncolor(str)
-    slen = len(ustr)
-    tlen = len(title)
-    tl = "-" * (slen if slen > 20 else 20) + 2
     color("[warning][b][WARNING][/endc] [warning]{}[/warning]".format(str), True)
 
 def uncolor(text):

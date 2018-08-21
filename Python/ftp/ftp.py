@@ -13,7 +13,7 @@ from modules.Config import Config
 # Default dev settings
 #--------------------------------------
 
-debug = True
+debug = 1
 
 #--------------------------------------
 # Connector
