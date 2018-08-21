@@ -3,7 +3,7 @@
 import importlib
 import shlex
 import sys
-
+from modules.Capture import Capture
 from modules.color import *
 
 
@@ -48,10 +48,10 @@ class Parser:
         prevredir = None
         found_std = 0
         for idx, el in enumerate(seq):
-            if not self.is_redir(el) and not self.is_std(el) and not found_std:
-                cmd.append(el)
             if self.is_std(el):
                 found_std = 1
+            if not self.is_redir(el) and not self.is_std(el) and not found_std:
+                cmd.append(el)
             if el == "<":
                 try:
                     cmd = self.read_file(seq[idx + 1])
@@ -78,16 +78,17 @@ class Parser:
                     break
             if self.is_redir(el) or idx == slen - 1:
                 # print(cmd)
-                if prevredir == "|":
+                if prevredir != None and prevredir in "|":
                     cmd = [cmd[0], "\n".join(stdin)]
                 # print(cmd)
-                self.execute(cmd)
-                if True == False and idx == slen - 1 or el == "&":
-                    for str in stdin:
-                        cprint(str)
-                if cmd[0] == "exit":
-                    sys.exit(1)
+                if el in "|":
+                    with Capture() as stdin:
+                        self.execute(cmd)
+                else:
+                    self.execute(cmd)
                 cmd = []
+                if self.is_redir(el):
+                    prevredir = el
             if self.is_redir(el) or idx == slen - 1:
                 prevredir = None if idx == slen - 1 else el
 
@@ -110,10 +111,10 @@ class Parser:
         """
         Definit si un element de la sequence de commandes correspond a un lien ()&, |
         """
-        return el == "&" or el == "|"
+        return el in "&" or el in "|"
 
     def is_std(self, el):
-        return el == ">" or el == "<" or el == "<<" or el == ">>"
+        return el in ">" or el in "<" or el in "<<" or el in ">>"
 
     def read_stdin(self, stop):
         cmd = ""

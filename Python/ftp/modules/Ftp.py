@@ -1,7 +1,7 @@
 # coding:utf-8
 
 import io, re, os
-from ftplib import FTP
+from ftplib import FTP, FTP_TLS
 from pathlib import Path
 from modules.color import *
 from modules.Capture import Capture
@@ -385,3 +385,8 @@ class Ftp(FTP):
         if os.name == "nt" and pattern.search(path):
             path += "/"
         return path
+
+class Ftp_TLS(Ftp, FTP_TLS):
+    def __init__(self, address="127.0.0.1", user="anonymous", port=21, timeout=30):
+        Ftp.__init__(self, address, timeout=timeout)
+        Ftp_TLS.__init__(self, address, timeout=timeout)
