@@ -1,21 +1,28 @@
 # coding:utf-8
 
-import io, re, os
+import io
+import os
+import re
 from ftplib import FTP, FTP_TLS
 from pathlib import Path
-from modules.color import *
-from modules.Capture import Capture
+
 from modules.Benchmark import Benchmark as Bench
+from modules.Capture import Capture
+from modules.Config import Config
+from modules.color import *
+
 
 # Table of contents
 #   - FILESYSTEM TESTS
 #   - FILESYSTEM INSPECTION
 #   - DATA TRANSFERS
 #   - PATHS DEFINITION
-
-class Ftp(FTP):
+class Ftp(FTP_TLS if Config.is_ftps() is True else FTP):
     def __init__(self, address="127.0.0.1", user="anonymous", port=21, timeout=30):
-        FTP.__init__(self, address, timeout=timeout)
+        if Config.is_ftps() is True:
+            FTP_TLS.__init__(self, address, timeout=timeout)
+        else:
+            FTP.__init__(self, address, timeout=timeout)
         self.home = None
         self.chome = None
         self.debug = 0
@@ -342,17 +349,17 @@ class Ftp(FTP):
         """
         path = self._clean_path(path)
         pattern = re.compile(r"^[a-zA-Z0-9_-]+:/")
-        #if self.debug < 0:
+        # if self.debug < 0:
         #    print("1 {} => {}".format(pwd, path))
         if len(path) and path[0] == "/":
             return path
         elif os.name == "nt" and pattern.search(path):
             return path
-        #if self.debug < 0:
+        # if self.debug < 0:
         #    print("2 {} => {}".format(pwd, path))
         pwd = pwd.split("/")
         path = path.split("/")
-        #if self.debug < 0:
+        # if self.debug < 0:
         #    print("3 {} => {}".format(pwd, path))
         while len(path) and (".." == path[0] or "." == path[0]):
             if len(pwd) > 1 and ".." == path[0]:
@@ -360,7 +367,7 @@ class Ftp(FTP):
                 del path[0]
             else:
                 del path[0]
-        #if self.debug < 0:
+        # if self.debug < 0:
         #    print("4 {} => {}".format(pwd, path))
         if len(path) == 0:
             if len(pwd) == 1 and "/" not in pwd[0]:
@@ -369,7 +376,7 @@ class Ftp(FTP):
                 return "/".join(pwd)
         if len(pwd) == 1 or (len(pwd) > 1 and len(pwd[-1]) and pwd[-1][-1] != "/"):
             pwd[-1] += "/"
-        #if self.debug < 0:
+        # if self.debug < 0:
         #    print("5 {} => {}".format(pwd, path))
         return "{}{}".format("/".join(pwd), "/".join(path))
 
@@ -385,8 +392,3 @@ class Ftp(FTP):
         if os.name == "nt" and pattern.search(path):
             path += "/"
         return path
-
-class Ftp_TLS(Ftp, FTP_TLS):
-    def __init__(self, address="127.0.0.1", user="anonymous", port=21, timeout=30):
-        Ftp.__init__(self, address, timeout=timeout)
-        Ftp_TLS.__init__(self, address, timeout=timeout)

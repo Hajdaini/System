@@ -42,3 +42,13 @@ class Config:
         cprint("FTP Address: [green]{}[/green]".format(data['address']))
         cprint("FTP Port: [green]{}[/green]".format(data['port']))
         cprint("FTP Timeout: [green]{}[/green]".format(data['timeout']))
+
+    @classmethod
+    def is_ftps(cls):
+        data = cls.load()
+        return data['ftps']
+
+    @classmethod
+    def is_prot_d(cls):
+        data = cls.load()
+        return data['prot_d']
