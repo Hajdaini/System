@@ -2,6 +2,7 @@
 
 import sys, ftplib
 from getpass import getpass
+from modules.Config import Config
 from modules.Ftp import Ftp
 from modules.color import cprint, error, fatal, success
 
@@ -9,12 +10,13 @@ class Connector:
     """
     Gere la connexion au serveur
     """
-    def __init__(self, address="127.0.0.1", user="anonymous", password="", port=21, timeout=1800):
-        self.address = address
-        self.user = user
-        self.password = password
-        self.port = int(port)
-        self.timeout = int(timeout)
+    def __init__(self):
+        data = Config.load()
+        self.address = data['address']
+        self.user = data['user']
+        self.password = ""
+        self.port = int(data['port'])
+        self.timeout = int(data['timeout'])
         self.ftp = None
         self.debug = False
 
@@ -27,20 +29,8 @@ class Connector:
             if state == "failed":
                 error("FTP failed to connect: {}".format(res))
             try:
-                tmp = input("FTP Host ({}): ".format(self.address))
-                self.address = tmp if tmp != "" else self.address
-
-                tmp = input("FTP User ({}): ".format(self.user))
-                self.user = tmp if tmp != "" else self.user
-
                 tmp = getpass("FTP Password: ")
                 self.password = tmp if tmp != "" else self.password
-
-                tmp = input("FTP Port ({}): ".format(self.port))
-                self.port = int(tmp) if tmp != "" else self.port
-
-                tmp = input("FTP Connection Timeout ({} seconds): ".format(self.timeout))
-                self.timeout = int(tmp) if tmp != "" else self.timeout
             except KeyboardInterrupt:
                 cprint("\n[b]Good Bye {}![/b]".format(self.user))
                 sys.exit(1)
