@@ -2,10 +2,11 @@
 
 import json
 import os.path
+from modules.color import cprint
 
 
 class Config:
-    config_file_path = os.path.dirname(__file__) + '/../config/ftp.cfg'
+    config_file_path = os.path.dirname(os.path.dirname(__file__)) + '/config/ftp.cfg'
     default_data = {
         'address': '127.0.0.1',
         'user': 'anonymous',
@@ -28,3 +29,16 @@ class Config:
     def save_default(cls):
         with open(cls.config_file_path, 'w') as outfile:
             json.dump(cls.default_data, outfile, indent=4, separators=(',', ': '))
+
+    @classmethod
+    def get_config_path_for_print_only(cls):
+        return os.path.dirname(os.path.dirname(__file__)) + ('\config\[b]ftp.cfg[/b]' if os.name == 'nt' else '/config/[b]ftp.cfg[/b]')
+
+    @classmethod
+    def display_config(cls):
+        cprint("FTP config file: [warning]{}[/warning]".format(cls.get_config_path_for_print_only()))
+        data = cls.load()
+        cprint("FTP User: [green]{}[/green]".format(data['user']))
+        cprint("FTP Address: [green]{}[/green]".format(data['address']))
+        cprint("FTP Port: [green]{}[/green]".format(data['port']))
+        cprint("FTP Timeout: [green]{}[/green]".format(data['timeout']))
