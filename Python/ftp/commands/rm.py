@@ -5,7 +5,7 @@ import time
 from modules.Command import Command
 from modules.color import cprint
 from modules.color import warning
-
+from modules.Benchmark import Benchmark as Bench
 
 class rm(Command):
     """
@@ -24,20 +24,24 @@ class rm(Command):
 
         [b]-r[/b]
             remove a directory and all its contents
-
     """
 
     def __init__(self, args, ftp):
         Command.__init__(self, args, ftp)
 
-    def without_options_handle(self):
+    def call(self):
+        Bench.mark("start")
+        self.input_handle()
+        Bench.elapsed_time("start")
+
+    def used_without_options(selff):
         abs_path = self.ftp.sabspath(self.argv[1])
         if self.ftp.is_file(abs_path):
             self.del_file(abs_path)
         else:
             warning("{} is not a filename (for directory use \" rm -d <directory>\")".format(abs_path))
 
-    def with_options_handle(self):
+    def used_with_options(self):
         path = self.ftp.sabspath(self.argv[2])
         self.options_handle()
 
@@ -56,11 +60,6 @@ class rm(Command):
                     self.del_recursive(self.ftp.sabspath(el))
         else:
             warning('invalid options')
-
-    def call(self):
-        start_time = time.time()
-        self.input_error_handle(self.without_options_handle, self.with_options_handle)
-        info("Elapsed time: {0:.4f}s".format(time.time() - start_time))
 
     def del_recursive(self, path):
         if self.ftp.is_file(path):
@@ -85,3 +84,7 @@ class rm(Command):
         path = self.ftp.sabspath(path)
         self.ftp.rmd(path)
         cprint("{}...[green]OK[/green]".format(path))
+
+    def handle_error(self):
+        warning("Command takes at least one file path")
+        self.help()

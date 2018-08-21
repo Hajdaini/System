@@ -3,7 +3,7 @@
 import re
 from modules.Command import Command
 from modules.color import *
-import time
+from modules.Benchmark import Benchmark as Bench
 
 class df(Command):
     """
@@ -25,6 +25,13 @@ class df(Command):
         Command.__init__(self, args, ftp)
         self.total_size = []
 
+    def call(self):
+        if self.argc == 2 and " " in self.argv[1]:
+            self.argv = self.argv[1].split()
+        Bench.mark("start")
+        self.input_handle()
+        Bench.elapsed_time("start", float_length=4)
+
     def used_alone(self):
         self.output_handle('.')
 
@@ -42,14 +49,6 @@ class df(Command):
             self.output_handle(self.argv[2], True)
         else:
             warning("invalid options")
-
-    def call(self):
-        if self.argc == 2 and " " in self.argv[1]:
-            self.argv = self.argv[1].split()
-        start_time = time.time()
-        self.input_error_handle(self.used_without_options, self.used_with_options, 'both', True, True, self.used_alone,
-                                self.used_alone_with_options)
-        info("Elapsed time: {0:.4f}s".format(time.time() - start_time))
 
     def output_handle(self, path_to_verify, human_size=False):
         path_to_verify = self.ftp.sabspath(path_to_verify)
