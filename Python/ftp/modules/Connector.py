@@ -1,7 +1,7 @@
 # coding:utf-8
 
 import ftplib
-import sys
+import sys, os
 from getpass import getpass
 
 from modules.Config import Config
@@ -76,7 +76,9 @@ class Connector:
 
     def test_prot_d(self):
         try:
+            sys.stdout = open(os.devnull, 'w')
             self.ftp.retrlines('LIST')
+            sys.stdout = sys.__stdout__
         except:
             print("\n")
             error("PROT P required\n")
