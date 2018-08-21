@@ -8,6 +8,8 @@ from modules.color import cprint
 class Config:
     config_file_path = os.path.dirname(os.path.dirname(__file__)) + '/config/ftp.cfg'
     default_data = {
+        'ftps': True,
+        'prot_d': True,
         'address': '127.0.0.1',
         'user': 'anonymous',
         'port': 21,
