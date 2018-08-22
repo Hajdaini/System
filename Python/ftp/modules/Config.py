@@ -38,7 +38,7 @@ class Config:
         return path
 
     @classmethod
-    def display_config(cls, file="ftp", show=['user', 'address', 'port', 'timeout'], hide=[], prefix_filename=True, keep_show_order=True):
+    def display_config(cls, file="ftp", show=[], hide=[], prefix_filename=True, keep_show_order=True):
         cprint(file.upper() + " config file: [warning]{}[/warning]".format(cls.get_config_path_for_print_only(file)))
         data = cls.load()
         if keep_show_order and len(show):

@@ -29,7 +29,7 @@ class Connector:
         Lance l'interface de connexion manuelle
         """
         state = "idle"
-        Config.display_config()
+        Config.display_config(show=['user', 'address', 'port', 'timeout'])
         while state != "connected":
             if state == "failed":
                 error("FTP failed to connect: {}".format(res))
