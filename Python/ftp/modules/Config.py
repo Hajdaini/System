@@ -7,14 +7,6 @@ from modules.color import cprint
 
 class Config:
     config_file_path = os.path.dirname(os.path.dirname(__file__)) + '/config/ftp.cfg'
-    default_data = {
-        'ftps': True,
-        'prot_d': True,
-        'address': '127.0.0.1',
-        'user': 'anonymous',
-        'port': 21,
-        'timeout': 600
-    }
 
     @classmethod
     def load(cls, file="ftp"):
@@ -30,22 +22,39 @@ class Config:
             json.dump(data, outfile, indent=4, separators=(',', ': '))
 
     @classmethod
-    def save_default(cls):
-        with open(cls.config_file_path, 'w') as outfile:
-            json.dump(cls.default_data, outfile, indent=4, separators=(',', ': '))
+    def save_default(cls, file="ftp"):
+        srcpath = cls.config_file_path.replace("ftp.cfg", "RECOVERY_CONFIG/" + file) + ".cfg.old"
+        destpath = cls.config_file_path.replace("ftp.cfg", file) + ".cfg"
+        with open(srcpath, "r") as srcfile:
+            default_data = json.load(srcfile)
+            with open(destpath, 'w') as destfile:
+                json.dump(default_data, destfile, indent=4, separators=(',', ': '))
 
     @classmethod
-    def get_config_path_for_print_only(cls):
-        return os.path.dirname(os.path.dirname(__file__)) + ('\config\[b]ftp.cfg[/b]' if os.name == 'nt' else '/config/[b]ftp.cfg[/b]')
+    def get_config_path_for_print_only(cls, file="ftp"):
+        path = os.path.dirname(os.path.dirname(__file__)) + ('/config/[b]' + file + '.cfg[/b]')
+        if os.name == 'nt':
+            path = path.replace('/', '\\')
+        return path
 
     @classmethod
-    def display_config(cls):
-        cprint("FTP config file: [warning]{}[/warning]".format(cls.get_config_path_for_print_only()))
+    def display_config(cls, file="ftp", show=['user', 'address', 'port', 'timeout'], hide=[], prefix_filename=True, keep_show_order=True):
+        cprint(file.upper() + " config file: [warning]{}[/warning]".format(cls.get_config_path_for_print_only(file)))
         data = cls.load()
-        cprint("FTP User: [green]{}[/green]".format(data['user']))
-        cprint("FTP Address: [green]{}[/green]".format(data['address']))
-        cprint("FTP Port: [green]{}[/green]".format(data['port']))
-        cprint("FTP Timeout: [green]{}[/green]".format(data['timeout']))
+        if keep_show_order and len(show):
+            for k in show:
+                if k in data and not k in hide:
+                    output = "{}: [green]{}[/green]"
+                    if prefix_filename:
+                        output = "{} {}".format(file.upper(), output)
+                    cprint(output.format(k.capitalize(), data[k]))
+        else:
+            for k, v in data.iteritems():
+                if (k in show or not len(show)) and k not in hide:
+                    output = "{}: [green]{}[/green]"
+                    if prefix_filename:
+                        output = "{} {}".format(file.upper(), output)
+                    cprint(output.format(k.capitalize(), v))
 
     @classmethod
     def is_ftps(cls):
