@@ -72,7 +72,6 @@ class Connector:
                     " \"[b][blue]port[/blue][/b]\""
                     " in \"[warning]{}[/warning]\"\n".format(
                         Config.get_config_path_for_print_only()))
-            print(e)
             sys.exit(1)
 
     def test_prot_d(self):
