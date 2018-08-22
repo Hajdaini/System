@@ -5,12 +5,13 @@ import shlex
 import sys
 from modules.Capture import Capture
 from modules.color import *
-
+from modules.Config import Config
 
 class Parser:
     def __init__(self, ftp):
         self.ftp = ftp
         self.debug = 0
+        self.aliasses = Config.load("aliasses")
 
     def split(self, str):
         """
@@ -33,7 +34,15 @@ class Parser:
                     sys.exit(1)
                 if seq == "":
                     continue
-                self.execute(shlex.split(seq))
+                seq = shlex.split(seq)
+                for k in self.aliasses:
+                    if k in seq[0] and len(k) == len(seq[0]):
+                        if len(seq) >= 2:
+                            seq = shlex.split(self.aliasses[k]) + seq[1:]
+                        else:
+                            seq = shlex.split(self.aliasses[k])
+                        break
+                self.execute(seq)
             except ConnectionAbortedError:
                 fatal("Une connexion établie a été abandonnée par un logiciel de votre ordinateur hôte")
 

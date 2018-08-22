@@ -11,7 +11,6 @@ from modules.Capture import Capture
 from modules.Config import Config
 from modules.color import *
 
-
 # Table of contents
 #   - FILESYSTEM TESTS
 #   - FILESYSTEM INSPECTION

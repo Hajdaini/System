@@ -17,14 +17,16 @@ class Config:
     }
 
     @classmethod
-    def load(cls):
-        with open(cls.config_file_path, 'r') as data_file:
+    def load(cls, file="ftp"):
+        path = cls.config_file_path.replace("ftp.cfg", file) + ".cfg"
+        with open(path, 'r') as data_file:
             data = json.load(data_file)
         return data
 
     @classmethod
-    def save(cls, data):
-        with open(cls.config_file_path, 'w') as outfile:
+    def save(cls, data, file="ftp"):
+        path = cls.config_file_path.replace("ftp.cfg", file) + ".cfg"
+        with open(path, 'w') as outfile:
             json.dump(data, outfile, indent=4, separators=(',', ': '))
 
     @classmethod
@@ -53,4 +55,4 @@ class Config:
     @classmethod
     def is_prot_d(cls):
         data = cls.load()
-        return data['prot_d']
+        return data["ftps"] and data['prot_d']
