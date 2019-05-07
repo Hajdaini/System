@@ -1,11 +1,15 @@
 # word-directory-finder
+
 This program searches through an entire file or file line by line (by extension or not), the desired word, by printing the file line and the file path.
 
-***example :***
+**example :**
+
+```shell
+python3 grep_and_remove.py -w chat -p ./ -e "php txt"
 ```
-python grep_and_remove.py -w chat -p ./ -e "php txt"
-```
-***Result :***
+
+**Result :**
+
 ```
 found at line 3 in the path "./test.php"
 found at line 6 in the path "./test.php"
@@ -19,7 +23,9 @@ Finish in 0.066 s
 ```
 
 ## Documentation :
+
 You will find all the documentation with the -h or --help  option 
 
 ## Advices
+
 Prefer search by extension because it is faster.

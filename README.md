@@ -1,3 +1,3 @@
 # System
 
-<img src="linux-mac-windows.jpg">
+![linux mac windows](linux-mac-windows.jpg)
