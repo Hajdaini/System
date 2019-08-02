@@ -1,0 +1,20 @@
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name  command to be executed
+
+# crontab maker: https://crontab.guru/
+
+# every day at 22:00
+05 22 * * * /home/hatim/Documents/scripts/linkedin_bot/run.sh 2>> /var/log/cron.error
+00 22 * * * /home/hatim/Documents/scripts/news_update.sh 2>> /var/log/cron.error
+
+# At 22:10 on day-of-month 1 in January, April, July, and October (every 3 months)
+10 22 01 Jan,Apr,Jul,Oct * rm -rf /var/log/updateBoot/*
+
+# At 22:15 on day-of-month 1 and 15 (every 2 weeks)
+15 22 1,15 * * /usr/local/bin/updateBoot/updateBootLog.sh

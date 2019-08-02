@@ -1,0 +1,8 @@
+[Unit]
+Description=Update all packages at boot
+
+[Service]
+ExecStart=/usr/local/bin/updateBoot/updateBoot.sh
+
+[Install]
+WantedBy=multi-user.target
