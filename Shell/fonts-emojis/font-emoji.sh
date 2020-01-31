@@ -1,6 +1,12 @@
 #!/bin/bash
 
-sudo dnf install google-noto-emoji-color-fonts
+os=`lsb_release -d | awk -F"\t" '{print $2}'`
+
+if echo ${os} | grep -i 'ubuntu\|debian'; then
+    sudo apt-get install fonts-noto-color-emoji
+else
+    sudo dnf install google-noto-emoji-color-fonts
+fi
 
 config_location="~/.config/fontconfig/"
 
