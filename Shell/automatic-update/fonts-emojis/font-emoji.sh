@@ -7,10 +7,10 @@ mkdir -p $config_location
 
 
 if echo ${os} | grep -i 'ubuntu\|debian'; then
-    sudo apt install fonts-noto-color-emoji
+    sudo apt-get install -y fonts-noto-color-emoji
     mv fonts-ubuntu.conf ${config_location}/fonts.conf
 else
-    sudo dnf install google-noto-emoji-color-fonts
+    sudo dnf install -y google-noto-emoji-color-fonts
     mv fonts-fedora.conf ${config_location}/fonts.conf
 fi
 
